@@ -34,10 +34,10 @@ public class MainUI {
         shell.setButtonImage(ImageCache.getImage("selection_recycle_24.png"));
         //Shell shell = new Shell(display);
         
-        shell.setText("SWT Ribbon Tester");
-        shell.setSize(714, 500);
+        shell.setText("展愛隊資料庫管理系統");
+        shell.setSize(1024, 600);
         Text text = new Text(shell.getShell(), SWT.BORDER);
-        
+        /*
         QuickAccessShellToolbar mtb = shell.getToolbar();
         RibbonButton mtbtb1 = new RibbonButton(mtb, ImageCache.getImage("gear_ok_16.gif"), null, SWT.NONE);
         RibbonButton mtbtb2 = new RibbonButton(mtb, ImageCache.getImage("gantt_16.gif"), null, SWT.NONE);
@@ -47,6 +47,7 @@ public class MainUI {
         Menu shellMenu = shell.getBigButtonMenu();
         MenuItem btest = new MenuItem(shellMenu, SWT.POP_UP);
         btest.setText("Testing a menu");
+        */
         
         shell.addBigButtonListener(new SelectionListener() {
 
@@ -74,39 +75,80 @@ public class MainUI {
         
         //ftf.setDrawEmptyTabs(false);
         // Tabs
-        RibbonTab ft0 = new RibbonTab(ftf, "Home");
-        RibbonTab ft1 = new RibbonTab(ftf, "Insert");
-        new RibbonTab(ftf, "Page Layout");
-        new RibbonTab(ftf, "References");               
-        new RibbonTab(ftf, "Empty");
+        RibbonTab servicehour = new RibbonTab(ftf, "時數統計");
+        RibbonTab monthReport = new RibbonTab(ftf, "月訊");
+        RibbonTab activity = new RibbonTab(ftf, "活動資訊");
+        RibbonTab input = new RibbonTab(ftf, "輸入資料");               
+        //new RibbonTab(ftf, "Empty");
         
         // Tooltip
         RibbonTooltip toolTip = new RibbonTooltip("Some Action Title", "This is content text that\nsplits over\nmore than one\nline\n\\b\\c255000000and \\xhas \\bdifferent \\c000000200look \\xand \\bfeel.", ImageCache.getImage("tooltip.jpg"), ImageCache.getImage("questionmark.gif"), "Press F1 for more help"); 
 
-        // Group
-
+        // ServiceHour Group
+        
         // toolbar group
-        RibbonGroup tbGroup = new RibbonGroup(ft0, "Toolbar Here");
+        /*
+        RibbonGroup tbGroup = new RibbonGroup(servicehour, "Toolbar Here");
         RibbonToolbar toolbar = new RibbonToolbar(tbGroup, RibbonToolbar.STYLE_BORDERED, 2);
         RibbonToolbarGrouping rtg = new RibbonToolbarGrouping(toolbar, 1);              
         RibbonToolbarGrouping rtg2 = new RibbonToolbarGrouping(toolbar, 1);
         RibbonToolbarGrouping rtg3 = new RibbonToolbarGrouping(toolbar, 1);
-        
         RibbonToolbarGrouping rtg4 = new RibbonToolbarGrouping(toolbar, 2);
         
         RibbonButton rbTb1 = new RibbonButton(rtg, ImageCache.getImage("books_16.gif"), null, RibbonButton.STYLE_ARROW_DOWN_SPLIT | RibbonButton.STYLE_TOGGLE);
         RibbonButton rbTb2 = new RibbonButton(rtg2, ImageCache.getImage("gear_ok_16.gif"), null, SWT.NONE);
         RibbonButton rbTb3 = new RibbonButton(rtg2, ImageCache.getImage("gantt_16.gif"), null, RibbonButton.STYLE_ARROW_DOWN);
         RibbonButton rbTb4 = new RibbonButton(rtg3, ImageCache.getImage("gantt_16.gif"), null, RibbonButton.STYLE_ARROW_DOWN_SPLIT);
-        
         RibbonButton rbTb5 = new RibbonButton(rtg4, ImageCache.getImage("enabled_small.gif"), null, RibbonButton.STYLE_NO_DEPRESS);
         RibbonButton rbTb6 = new RibbonButton(rtg4, ImageCache.getImage("selection_recycle_16.gif"), null, RibbonButton.STYLE_ARROW_DOWN_SPLIT);
         
         rbTb4.setEnabled(false);
         // end toolbar group
-        
-        RibbonGroup ftg = new RibbonGroup(ft0, "Category Name", toolTip);
+        */
+        RibbonGroup ftg = new RibbonGroup(servicehour, "各項時數", toolTip);
         // Button
+        RibbonButton hours_noMeeting = new RibbonButton(ftg, ImageCache.getImage("clock.png"),"服務時數",RibbonButton.STYLE_NO_DEPRESS);
+        hours_noMeeting.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				 System.out.println("service hours, meeting not included");
+				
+			}
+        	
+        });
+        
+        RibbonButton brochure_hours = new RibbonButton(ftg, ImageCache.getImage("books.png"),"志工手冊時數",RibbonButton.STYLE_NO_DEPRESS);
+        brochure_hours.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				 System.out.println("brochure hours");
+				
+			}
+        	
+        });
+        
+        RibbonButton all_hours = new RibbonButton(ftg, ImageCache.getImage("Calendar_Month.png"),"所有活動時數",RibbonButton.STYLE_NO_DEPRESS);
+        brochure_hours.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				 System.out.println("all hours");
+				
+			}
+        	
+        });
+        /*
         RibbonButton rb = new RibbonButton(ftg, ImageCache.getImage("olb_picture.gif"), "I have two\nrows", RibbonButton.STYLE_TWO_LINE_TEXT | RibbonButton.STYLE_ARROW_DOWN);//RibbonButton.STYLE_ARROW_DOWN_SPLIT);
         RibbonButton rb2 = new RibbonButton(ftg, ImageCache.getImage("olb_picture.gif"), "I'm split\ntoggle", RibbonButton.STYLE_ARROW_DOWN_SPLIT | RibbonButton.STYLE_TOGGLE | RibbonButton.STYLE_TWO_LINE_TEXT);
         rb2.setBottomOrRightToolTip(toolTip);
@@ -129,7 +171,7 @@ public class MainUI {
                 }                       
         });
         // Empty group
-        RibbonGroup cb = new RibbonGroup(ft1, "Checkboxes", toolTip);
+        RibbonGroup cb = new RibbonGroup(input, "Checkboxes", toolTip);
         RibbonButtonGroup cbg = new RibbonButtonGroup(cb);
         
         RibbonCheckbox rc = new RibbonCheckbox(cbg, "I'm checked", SWT.NONE);
@@ -143,14 +185,15 @@ public class MainUI {
         rc3.setToolTip(cbTip);
 
         rb.setToolTip(toolTip);
+        
         //TODO: Check when a dialog opens as a result of clicking this to see if this button does not redraw for some reason or think it's still selected
         new RibbonButton(ftg, ImageCache.getImage("olb_picture.gif"), "I am longer and do not depress", RibbonButton.STYLE_NO_DEPRESS);
 
-        RibbonGroup ftg2 = new RibbonGroup(ft1, "Group 1");
+        RibbonGroup ftg2 = new RibbonGroup(input, "Group 1");
         RibbonButton rb1 = new RibbonButton(ftg2, ImageCache.getImage("olb_picture2.gif"), "Button 1", SWT.NONE);
         //RibbonButton rb2 = new RibbonButton(ftg2, ImageCache.getImage("olb_picture3.gif"), "Button 2", SWT.NONE);
 
-        RibbonGroup ftg3 = new RibbonGroup(ft1, "Group 2");
+        RibbonGroup ftg3 = new RibbonGroup(input, "Group 2");
         RibbonButton rb3 = new RibbonButton(ftg3, ImageCache.getImage("olb_picture4.gif"), "Button 3", SWT.NONE);
         RibbonButton rb4 = new RibbonButton(ftg3, ImageCache.getImage("olb_picture6.gif"), "Button 4", SWT.NONE);
         rb4.setToolTip(toolTip);
@@ -158,7 +201,7 @@ public class MainUI {
         ButtonSelectGroup group = new ButtonSelectGroup();
         
         // native controls example
-        RibbonGroup ftg4 = new RibbonGroup(ft1, "Native");
+        RibbonGroup ftg4 = new RibbonGroup(input, "Native");
         GridLayout gl = new GridLayout(1, false);
         gl.marginHeight = 7;
         gl.marginLeft = 0;
@@ -210,7 +253,7 @@ public class MainUI {
         rb4.setButtonSelectGroup(group);
         rb5.setButtonSelectGroup(group);
         rb6.setButtonSelectGroup(group);
-                                
+                                */
         Utils.centerDialogOnScreen(shell.getShell());
 
         shell.open();
