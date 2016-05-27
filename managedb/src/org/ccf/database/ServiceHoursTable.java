@@ -4,51 +4,59 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 
 public class ServiceHoursTable {
-	/* ServiceHours table title description
-	 * NAME:姓名
-	 * ACTIVITY:活動
-	 * YEAR:年
-	 * MONTH:月
-	 * TOTAL_HOURS:時數
-	 * IS_ACCUMULATED:可累計
-	 */
-	private String serviceHours ="CREATE TABLE servicehours (" + 
-	"	 NAME VARCHAR(50) NOT NULL" +
-	"  , ACTIVITY TEXT NOT NULL" +
-	"  , YEAR VARCHAR(30) NOT NULL" +
-	"  , MONTH VARCHAR(30) NOT NULL " +
-	"  , TOTAL_HOURS VARCHAR(50) NOT NULL" +
-	"  , IS_ACCUMULATED VARCHAR(30) NOT NULL)";
+	public	String[] serviceHoursHeader= {"姓名","活動","serviceType","年","月","時數","可累計"};
+	private String serviceHoursTableName = "servicehours";
+	private String serviceHoursCreateTableSql ="CREATE TABLE servicehours (" + 
+	"	   姓名	VARCHAR(50) NOT NULL" +
+	"  , 活動	TEXT NOT NULL" +
+	"  , serviceType VARCHAR(50) " +
+	"  , 年	VARCHAR(30) NOT NULL" +
+	"  , 月	VARCHAR(30) NOT NULL " +
+	"  , 時數	VARCHAR(50) NOT NULL" +
+	"  , 可累計	VARCHAR(30) NOT NULL)";
+
+
+	private String insertAllDataSQL = "insert into servicehours"
+			+ "(姓名, 活動, serviceType, 年, 月, 時數, 可累計) values" 
+		    + "(?,?,?,?,?,?,?)"; 
 	
+	private String selectAllDataSQL= "select * from servicehours";
+	private String selectByNameSQL = "select * from servicehours where 姓名 = ?";
+    private String selectByDateSQL = "select * from servicehours where 年 = ? and 月 = ?";
+	  
 	DBFunctions db = new DBFunctions();
+	private ExcelFileProcess servicehourse_xsl = new ExcelFileProcess();
 	
-	private String insertAllData = "insert into servicehours"
-			+ "(NAME, ACTIVITY, YEAR, MONTH, TOTAL_HOURS, IS_ACCUMULATED) values" 
-		    + "(?,?,?,?,?,?)"; 
+	private int dataRows;
+	private int dataCols;
 	
-	private String selectAllData= "select * from servicehours";
-	private String selectByName = "select * from servicehours where NAME = ?";
-    private String selectByDate = "select * from servicehours where YEAR = ? and month = ?";
-	private String exportData = "SELECT * INTO OUTFILE 'servicehours.txt' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' FROM servicehours" ;
-    
 	public void createServiceHoursTable(){
-		db.createTable(serviceHours);
+		db.createTable(serviceHoursCreateTableSql);
+	}
+	public void dropServiceHoursTable(){
+		db.dropTable(serviceHoursTableName);
 	}
 	
-	public void insertAllDataIntoServiceHoursTable(String name, String activity, String year, String month, String totalhrs, String isaccumulated) throws SQLException
+	public String[] getServiceHoursHeader(){
+		return serviceHoursHeader;
+	}
+
+	public void insertAllDataIntoServiceHoursTable(String name, String activity, String servicetype, String year, String month, String totalhrs, String isaccumulated) throws SQLException
 	{
 		if (db.con == null)
 		{
 			db.createConnection();
 		} 
+		//System.out.println(name+""+activity+""+year+""+month+""+totalhrs+""+isaccumulated);
 		try{
-			db.pst = db.con.prepareStatement(insertAllData);
+			db.pst = db.con.prepareStatement(insertAllDataSQL);
 			db.pst.setString(1, name); 
 			db.pst.setString(2, activity); 
-			db.pst.setString(3, year);
-			db.pst.setString(4, month);
-			db.pst.setString(5, totalhrs);
-			db.pst.setString(6, isaccumulated);
+			db.pst.setString(3, servicetype);
+			db.pst.setString(4, year);
+			db.pst.setString(5, month);
+			db.pst.setString(6, totalhrs);
+			db.pst.setString(7, isaccumulated);
 			db.pst.executeUpdate(); 
 	    }catch(SQLException e){ 
 	      System.out.println("insertDataServiceHoursTable Exception :" + e.toString()); 
@@ -64,25 +72,36 @@ public class ServiceHoursTable {
 	    } 
 	}
 	
-	public void queryFromServiceHoursTable() throws SQLException
-	{
+	public String[][] queryAllFromServiceHoursTable() throws SQLException
+	{	
+		return db.queryAllFromTable (selectAllDataSQL,serviceHoursTableName);
+		/*String[][] data = null;
 		try{ 
 			 if(db.con == null)
 			 {
 				db.createConnection();
 			 }
 		      db.stat = db.con.createStatement(); 
-		      db.rs = db.stat.executeQuery(selectAllData); 
-
-		      while(db.rs.next()) 
-		      { 
-		    	  try {
-					System.out.println(new String (db.rs.getBytes("NAME"),"UTF-8"));
-				  } catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-		      } 
+		      db.rs = db.stat.executeQuery(selectAllDataSQL); 
+            
+		  	int rows;
+			if (!db.rs.last()){
+				System.out.println("[ServiceHours]queryAllFromServiceHoursTable: No data.");
+			}
+			rows = db.rs.getRow();
+			//System.out.println("row:"+rows);
+			db.rs.beforeFirst();
+			
+			int cols = db.rs.getMetaData().getColumnCount();
+			//System.out.println("cols:"+cols);
+			data = new String[rows][cols];
+			for (int i=0; i<rows; i++){
+				db.rs.next();
+			for (int j = 0; j<cols; j++){
+				data[i][j] = db.rs.getString(j+1);
+				//System.out.println("Get data:"+data[i][j].toString());
+			}
+		  }
 		    }catch(SQLException e){ 
 		      System.out.println("selectAllDataFromServiceHoursTable Exception :" + e.toString()); 
 		    }finally{
@@ -94,10 +113,11 @@ public class ServiceHoursTable {
 		      {
 		    	  db.close(); 
 		      }
-		    } 
+		    }
+		return data; */
 	}
 	
-	public void queryServiceHoursTableByName(String name) throws SQLException
+	public void queryServiceHoursTableByName(String name, boolean isSaveFile) throws SQLException
 	{
 		try{ 
 			if(db.con == null)
@@ -105,18 +125,44 @@ public class ServiceHoursTable {
 				db.createConnection();
 			}
 			 
-				db.pst = db.con.prepareStatement(selectByName);
+				db.pst = db.con.prepareStatement(selectByNameSQL);
 				db.pst.setString(1, name);   
 				db.rs = db.pst.executeQuery();
+			 /*	
 		      while(db.rs.next()) 
 		       { 
 		    	  try {
-					System.out.println(new String (db.rs.getBytes("ACTIVITY"),"UTF-8"));
+					System.out.println(new String (db.rs.getBytes("活動"),"UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
-		      } 
+		      } */
+				
+				int rows;
+				if (!db.rs.last()){
+					System.out.println("[ServiceHours]queryServiceHoursTableByDate: No data.");
+				}
+				rows = db.rs.getRow();
+				System.out.println("row:"+rows);
+				db.rs.beforeFirst();
+				
+				int cols = db.rs.getMetaData().getColumnCount();
+				System.out.println("cols:"+cols);
+				Object[][] data = new Object[rows][cols];
+				for (int i=0; i<rows; i++){
+					db.rs.next();
+				for (int j = 0; j<cols; j++){
+					data[i][j] = db.rs.getObject(j+1);
+					//System.out.println("Get data:"+data[i][j].toString());
+				}
+			}
+			
+			if(!isSaveFile)
+				System.out.println("[ServiceHours]queryServiceHoursTableByName: No data save");
+
+				servicehourse_xsl.exportQueryResultToExcel(data, serviceHoursHeader, "serviceHoursName");
+					
 		    }catch(SQLException e){ 
 		      System.out.println("queryServiceHoursTableByName Exception :" + e.toString()); 
 		    }finally{ 
@@ -131,29 +177,56 @@ public class ServiceHoursTable {
 		    } 
 	}
 	
-	public void queryServiceHoursTableByDate(String year, String month) throws SQLException
+	public void queryServiceHoursTableByDate(String year, String month, boolean isSaveFile) throws SQLException
 	{
+		
 		try{ 
 			if(db.con == null)
 			{
 				db.createConnection();
 			}
 			 
-				db.pst = db.con.prepareStatement(selectByDate);
+				db.pst = db.con.prepareStatement(selectByDateSQL);
 				db.pst.setString(1, year);
 				db.pst.setString(2, month);
 				db.rs = db.pst.executeQuery();
+			/*	
 		      while(db.rs.next()) 
 		      {
 		    	  try {
-					System.out.println(new String (db.rs.getBytes("ACTIVITY"),"UTF-8"));
+					System.out.println(new String (db.rs.getBytes("活動"),"UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
-		      } 
+		      } */
+				
+				int rows;
+				if (!db.rs.last()){
+					System.out.println("[ServiceHours]queryServiceHoursTableByDate: No data.");
+				}
+				rows = db.rs.getRow();
+				System.out.println("row:"+rows);
+				db.rs.beforeFirst();
+				
+				int cols = db.rs.getMetaData().getColumnCount();
+				System.out.println("cols:"+cols);
+				Object[][] data = new Object[rows][cols];
+				for (int i=0; i<rows; i++){
+					db.rs.next();
+				for (int j = 0; j<cols; j++){
+					data[i][j] = db.rs.getObject(j+1);
+					//System.out.println("Get data:"+data[i][j].toString());
+				}
+			}
+			
+			if(!isSaveFile)
+				System.out.println("[ServiceHours]queryServiceHoursTableByName: No data save");
+
+				servicehourse_xsl.exportQueryResultToExcel(data, serviceHoursHeader, "serviceHoursYM");
+				
 		    }catch(SQLException e){ 
-		      System.out.println("queryServiceHoursTableByName Exception :" + e.toString()); 
+		      System.out.println("[ServiceHours]queryServiceHoursTableByName Exception :" + e.toString()); 
 		    }finally{ 
 		    	 if (db.rs != null)
 			      {
@@ -165,30 +238,46 @@ public class ServiceHoursTable {
 			      } 
 		    }	
 	 }
+
 	
-	public void exportServiceHoursTableToFile() throws SQLException
-	{
-		try{ 
-			 if(db.con == null)
-			 {
-				db.createConnection();
-			 }
-		      db.stat = db.con.createStatement(); 
-		      db.rs = db.stat.executeQuery(exportData);
-		    }
-		    catch(SQLException e){ 
-		      System.out.println("selectAllDataFromServiceHoursTable Exception :" + e.toString()); 
-		    }finally{
-		      if (db.rs != null)
-		      {
-		    	  db.rs.close();
-		      }
-		      if(db.con != null)
-		      {
-		    	  db.close(); 
-		      }
-		    } 
-		
+	public boolean exportServiceHoursTableToExcel(String directory){
+		boolean result = false ;
+		try {
+			result = servicehourse_xsl.exportToExcel(serviceHoursTableName,serviceHoursHeader,directory,"ServiceHoursTable");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
+	public boolean importExcelToServiceHourseTable(String filepath) throws SQLException{
+		Object [][]data = null;
+		String [] myData = new String[serviceHoursHeader.length];
+	    boolean isFinished = false ;
+		//1. Drop the table is the table exists.
+		dropServiceHoursTable();
+		
+		//2. Create a table after dropping. 
+		createServiceHoursTable();
+		
+		//3. Start to import excel data into database.
+		 data = servicehourse_xsl.importFromExcel(filepath);
+		 //3-A. Since the first row is column header,we ignore the first row
+		 for (int i=1; i < data.length ;i++){
+		    	for (int j=0; j<serviceHoursHeader.length ; j++){
+		    		//3-B. We extract one row of data from data object 
+		    		myData[j] = data[i][j].toString();
+		    		//3-C. Write one row of data into database
+		    		if (j== (serviceHoursHeader.length-1)){
+		    			insertAllDataIntoServiceHoursTable(myData[0],myData[1],
+		    					myData[2],myData[3],myData[4],myData[5],myData[6]);
+		    			//3-D. Reset myData array after data insert.
+		    			myData = new String[serviceHoursHeader.length];
+		    		}
+		    	}
+		  isFinished = true;
+		 }
+		return isFinished;
+	}	
 }

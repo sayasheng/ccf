@@ -13,7 +13,7 @@ public class DBFunctions {
 	private String insertdbSQL = "insert into activityInfo"
 			+ "(ACTIVITY, SERVICE_INFO, TEAM_IN_CHARGE, PERSON_IN_CHARGE, PEOPLE_REQUIRE, ACTIVITY_YEAR, AM, PM) values" 
 		    + "(?,?,?,'TEST1','TEST2','TEST3','TEST4','TEST5')"; 
-				      
+	
 	private String selectSQL= "select * from activityInfo";
 	
 	public void createConnection(){
@@ -42,11 +42,11 @@ public class DBFunctions {
 			if(con == null)
 				createConnection();
 	    	
-			 PreparedStatement tableQuery = con.prepareStatement("show tables like ?");
-			 tableQuery.setString(1, ""+tableName);
-			 ResultSet result = tableQuery.executeQuery();
+			  pst = con.prepareStatement("show tables like ?");
+			  pst.setString(1,tableName);
+			  rs = pst.executeQuery();
 			
-			if (result.getRow()>0){
+			if (rs.getRow()>0){
 				//System.out.println("table exists");
 				exist = true;
 			}
@@ -63,13 +63,13 @@ public class DBFunctions {
 	}
 	
 
-	public void createTable(String tableName){ 
+	public void createTable(String createTableSQL){ 
 		try{ 
 		      if(con == null)
 		    	  createConnection();
 				
 			  stat = con.createStatement(); 
-		      stat.executeUpdate(tableName); 
+		      stat.executeUpdate(createTableSQL); 
 			//  stat.executeUpdate(activityInfodb);
 		    }catch(SQLException e){ 
 		      System.out.println("CreateDB Exception :" + e.toString()); 
@@ -78,8 +78,58 @@ public class DBFunctions {
 		    } 
 	}
 	
+	
+	public Object[][] getAllDataFromTable(String tableName, boolean extraRow)throws SQLException{
+		 if(con == null)
+		 {
+			 createConnection();
+		 }
 
+		try {
+				pst = con.prepareStatement("select * from " + tableName);
+				rs = pst.executeQuery();
+			
+			int rows;
+			if (!rs.last()){
+				return null;
+			}
+			rows = rs.getRow();
+			rs.beforeFirst();
+			if (extraRow) rows++;
+
+			int cols = rs.getMetaData().getColumnCount();
+			Object[][] data = new Object[rows][cols];
+			for (int i=0; i<rows-1; i++){
+					rs.next();
+				for (int j = 0; j<cols; j++){
+					data[i][j] = rs.getObject(j+1);
+				}
+			}
+
+			//if there is an extra row, fill it with empty strings
+			if (extraRow){
+				for (int j = 0; j<cols; j++){
+					data[rows-1][j] ="";
+				}
+			}
+			//else get the last real row of data
+			else{
+				for (int j = 0; j<cols; j++){
+					data[rows-1][j] = rs.getObject(j+1);
+				}
+			}
+			return data;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public void insertTable( String activity,String service_info, String team_in_charge){ 
+		if(con == null)
+		 {
+			 createConnection();
+		 }
 		try{ 
 			  if(con == null)
 				  createConnection();
@@ -97,12 +147,15 @@ public class DBFunctions {
 	}
 	
 	public void dropTable(String tableName){ 
-		String dropdbSQL = "DROP TABLE" + tableName;
+		String dropdbSQL = "DROP TABLE If Exists " + tableName;
+		System.out.print(dropdbSQL);	
 		try{ 
+			if(con == null)
+			  createConnection();
 		      stat = con.createStatement(); 
 		      stat.executeUpdate(dropdbSQL); 
 		    }catch(SQLException e){ 
-		      System.out.println("DropDB Exception :" + e.toString()); 
+		      System.out.println("DropDB Exception:" + e.toString()); 
 		    }finally{ 
 		      close(); 
 		    } 
@@ -132,6 +185,98 @@ public class DBFunctions {
 		      close(); 
 		    } 
 	} 
+	
+	public String[][] queryAllFromTable(String selectAllDataSQL) throws SQLException
+	{
+		String[][] data = null;
+	
+		try{ 
+			 if(con == null)
+			 {
+				createConnection();
+			 }
+	
+		      stat = con.createStatement(); 
+		      rs = stat.executeQuery(selectAllDataSQL); 
+
+		  	int rows;
+			if (!rs.last()){
+				System.out.println("[DBFunctions_queryAllFromTable]: No data.");
+			}
+			rows = rs.getRow();
+			//System.out.println("[DBFunctions_queryAllFromTable] row:"+rows);
+			rs.beforeFirst();
+			
+			int cols = rs.getMetaData().getColumnCount();
+			//System.out.println("cols:"+cols);
+			data = new String[rows][cols];
+			for (int i=0; i<rows; i++){
+				rs.next();
+			for (int j = 0; j<cols; j++){
+				data[i][j] = rs.getString(j+1);
+				//System.out.println("[DBFunctions_queryAllFromTable]Get data:"+data[i][j].toString());
+			}
+		  }
+		    }catch(SQLException e){ 
+		     // System.out.println("[DBFunctions_queryAllFromTable] "+tableName+""+"Exception :" + e.toString());
+		      return data;
+		    }finally{
+		      if (rs != null)
+		      {
+		    	  rs.close();
+		      }
+		      if(con != null)
+		      {
+		    	  close(); 
+		      }
+		    }
+		return data;
+	}
+	
+	public String[][] queryAllFromTable(String selectAllDataSQL, String tableName) throws SQLException
+	{
+		String[][] data = null;
+		try{ 
+			 if(con == null)
+			 {
+				createConnection();
+			 }
+		      stat = con.createStatement(); 
+		      rs = stat.executeQuery(selectAllDataSQL); 
+            
+		  	int rows;
+			if (!rs.last()){
+				System.out.println("[DBFunctions_queryAllFromTable] "+tableName+": No data.");
+			}
+			rows = rs.getRow();
+			//System.out.println("row:"+rows);
+			rs.beforeFirst();
+			
+			int cols = rs.getMetaData().getColumnCount();
+			//System.out.println("cols:"+cols);
+			data = new String[rows][cols];
+			for (int i=0; i<rows; i++){
+				rs.next();
+			for (int j = 0; j<cols; j++){
+				data[i][j] = rs.getString(j+1);
+				//System.out.println("Get data:"+data[i][j].toString());
+			}
+		  }
+		    }catch(SQLException e){ 
+		      System.out.println("[DBFunctions_queryAllFromTable] "+tableName+""+"Exception :" + e.toString());
+		      return data;
+		    }finally{
+		      if (rs != null)
+		      {
+		    	  rs.close();
+		      }
+		      if(con != null)
+		      {
+		    	  close(); 
+		      }
+		    }
+		return data;
+	}
 	
 	public void close(){
 		try {
