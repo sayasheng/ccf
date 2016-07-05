@@ -38,7 +38,7 @@ public class PersonalInfoTable {
 		    + "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"; 
     private DBFunctions db = new DBFunctions();
 	private ExcelFileProcess personalinfo_xsl = new ExcelFileProcess();
-	private String selectAllDataSQL= "select * from personalinfo";
+	private String selectAllDataSQL= "select * from personalinfo ORDER BY (0+NO)";
 	
 	public void createPersonalInfoTable(){
 		db.createTable(personalInfoCreateTableSql);

@@ -189,7 +189,6 @@ public class DBFunctions {
 	public String[][] queryAllFromTable(String selectAllDataSQL) throws SQLException
 	{
 		String[][] data = null;
-	
 		try{ 
 			 if(con == null)
 			 {

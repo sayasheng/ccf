@@ -1,7 +1,10 @@
 package org.ccf.main;
 
 
+import java.net.URL;
 import java.sql.SQLException;
+
+import javax.swing.ImageIcon;
 
 import org.ccf.database.PersonalInfoTable;
 import org.ccf.database.ServiceHoursTable;
@@ -32,7 +35,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Composite;
-import  org.eclipse.swt.graphics.Color;
 
 
 import com.hexapixel.widgets.generic.ImageCache;
@@ -42,17 +44,23 @@ public class MainUI {
 
 	  Shell shell;
 
-	  Menu menuBar, sqlMangMenu,contactMenu, editMenu, aboutMenu;
+	  Menu menuBar, sqlMangMenu,contactMenu, insuranceMenu, activityMenu, editMenu, aboutMenu;
 	  
       //Header items
-	  MenuItem sqlMangMenuHeader, contactMenuHeader, editMenuHeader;
+	  MenuItem sqlMangMenuHeader, contactMenuHeader, insuranceMenuHeader, activityMenuHeader, editMenuHeader;
       
 	  //Drop items of file import
 	  MenuItem sqlMangImportFromExcelItem,sqlMangExportToExcelItem,fileExitItem;
 	 
 	  //Drop items of contact
-	  MenuItem  contactWithAddressItem, contactWithoutAddressItem, exportContactWithAddressItem,exportContactWithoutAddressItem ; 
+	  MenuItem  contactInfoItem, exportContactInfoItem; 
      
+	  //Drop items of insurance
+	  MenuItem insuranceItem, exportInsuranceItem;
+	  
+	  //Drop items of activity
+	  MenuItem activityDataSearchItem, activityRegisterSearchItem,exportActivityDataItem,exportActivityRegisterItem;
+	  
       MenuItem editCopyItem;
       //Layout
       Group groupTableTop,groupTableButtom;
@@ -75,13 +83,17 @@ public class MainUI {
 	  private  QueryAllDialog mQueryAllDialog;
 	  private  ImportDbDialog mImportDbDialog; 
 	  private  ExportDbDialog mExportDbDialog;
-	  private ExportContactInfoDialog mExportContactInfoDialog;
-	  
+	  private  ContactInfoSearchDialog mContactInfoSearchDialog;
+	  private  ExportContactInfoDialog mExportContactInfoDialog; 
+	  private  InsuranceSearchDialog mInsuranceSearchDialog;
+	  private  ExportInsuranceDialog mExportInsuranceDialog;
+	  private  ActivitySearchDialog mActivitySearchDialog;
+	  private  ExportActivityDialog mExportActivityDialog;
+	 
 	  public static Color mTextColor;
 	  
 	  //Image icons
-	  private Image importImg,exportImg,exitImg,queryAllImg,deleteImg,addImg,queryByConditionImg,contactWithoutAddressImg,contactWithAddressImg
-	  				,exportContactWithoutAddressImg,exportContactWithAddressImg;
+	  private Image importImg,exportImg,exitImg,queryAllImg,deleteImg,addImg,queryByConditionImg,contactInfoImg,exportContactInfoImg,insuranceImg,exportInsuranceImg,activityDataSearchImg,activityRegisterSearchImg,exportActivityDataImg,exportActivityRegisterImg;
 	  private UiDbInterface mUiDbInterface = new UiDbInterface();  
 	
 	  public MainUI() {
@@ -106,69 +118,94 @@ public class MainUI {
 	    sqlMangMenu = new Menu(shell, SWT.DROP_DOWN);
 	    sqlMangMenuHeader.setMenu(sqlMangMenu);
 	    
-	    
-		importImg = new Image(display, "img\\import_icon_16x16.png");
+		importImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/import_icon_16x16.png"));
 	    sqlMangImportFromExcelItem = new MenuItem(sqlMangMenu, SWT.PUSH);
 	    sqlMangImportFromExcelItem.setText("資料庫輸入");
 	    sqlMangImportFromExcelItem.setImage(importImg);
 	    sqlMangImportFromExcelItem.addSelectionListener(new MenuItemListener());
 	    
-	    exportImg = new Image(display,"img\\export_icon_16x16.png");
+	    exportImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/export_icon_16x16.png"));
 	    sqlMangExportToExcelItem = new MenuItem(sqlMangMenu, SWT.PUSH);
 	    sqlMangExportToExcelItem.setText("資料庫輸出");
 	    sqlMangExportToExcelItem.setImage(exportImg);
 	    sqlMangExportToExcelItem.addSelectionListener(new MenuItemListener());
 	    
-	    exitImg = new Image(display,"img\\exit_icon_16x16.png");
+	    exitImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/exit_icon_16x16.png"));
 	    fileExitItem = new MenuItem(sqlMangMenu, SWT.PUSH);
 	    fileExitItem.setText("離開");
 	    fileExitItem.setImage(exitImg);
 	    fileExitItem.addSelectionListener(new MenuItemListener());
 	    //檔案輸入 settings --
 	    
-	    //通訊錄 settings ++ 
+	    //通訊錄  settings ++
 	    contactMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 	    contactMenuHeader.setText("通訊錄");
 	    contactMenu = new Menu(shell, SWT.DROP_DOWN);
 	    contactMenuHeader.setMenu(contactMenu);
+	  
+	    contactInfoImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/contact_search_icon_16x16.png"));
+	    contactInfoItem = new MenuItem(contactMenu, SWT.PUSH);
+	    contactInfoItem.setImage(contactInfoImg);
+	    contactInfoItem.setText("通訊錄查詢");
 	    
-	    contactWithAddressImg = new Image(display,"img\\contact_address_icon_16x16.png");
-	    contactWithAddressItem = new MenuItem(contactMenu, SWT.PUSH);
-	    contactWithAddressItem.setImage(contactWithAddressImg);
-	    contactWithAddressItem.setText("通訊錄(含地址)");
-
-	    contactWithoutAddressImg = new Image(display,"img\\contact_icon_16x16.png");
-	    contactWithoutAddressItem = new MenuItem(contactMenu, SWT.PUSH);
-	    contactWithoutAddressItem.setImage(contactWithoutAddressImg);
-	    contactWithoutAddressItem.setText("通訊錄(不含地址)");
-	   
-	    exportContactWithAddressImg = new Image(display,"img\\export_contact_address_icon_16x16.png");
-	    exportContactWithAddressItem = new MenuItem(contactMenu, SWT.PUSH);
-	    exportContactWithAddressItem.setImage(exportContactWithAddressImg);
-	    exportContactWithAddressItem.setText("通訊錄(含地址)輸出");
-
-	    exportContactWithoutAddressImg = new Image(display,"img\\export_contact_icon_16x16.png");
-	    exportContactWithoutAddressItem = new MenuItem(contactMenu, SWT.PUSH);
-	    exportContactWithoutAddressItem.setImage(exportContactWithoutAddressImg);
-	    exportContactWithoutAddressItem.setText("通訊錄(不含地址)輸出");
+	    exportContactInfoImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/export_contact_icon_16x16.png"));
+	    exportContactInfoItem = new MenuItem(contactMenu, SWT.PUSH);
+	    exportContactInfoItem.setImage(exportContactInfoImg);
+	    exportContactInfoItem.setText("通訊錄輸出");
 	    
-	    contactWithAddressItem.addSelectionListener(new MenuItemListener());
-	    contactWithoutAddressItem.addSelectionListener(new MenuItemListener());
-	    exportContactWithAddressItem.addSelectionListener(new MenuItemListener());
-	    exportContactWithoutAddressItem.addSelectionListener(new MenuItemListener());
-	
+	    contactInfoItem.addSelectionListener(new MenuItemListener());
+	    exportContactInfoItem.addSelectionListener(new MenuItemListener());
 	    //通訊錄 settings --
 	    
+	    //保險資料 settings ++
+	    insuranceMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+	    insuranceMenuHeader.setText("保險");
+	    insuranceMenu = new Menu(shell, SWT.DROP_DOWN);
+	    insuranceMenuHeader.setMenu(insuranceMenu);
 	    
+	    insuranceImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/insurance_icon_16x16.png"));
+	    insuranceItem = new MenuItem(insuranceMenu, SWT.PUSH);
+	    insuranceItem.setImage(insuranceImg);
+	    insuranceItem.setText("保險資料查詢");
+	    
+	    exportInsuranceImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/export_insurance_icon_16x16.png"));
+	    exportInsuranceItem = new MenuItem(insuranceMenu, SWT.PUSH);
+	    exportInsuranceItem.setImage(exportInsuranceImg);
+	    exportInsuranceItem.setText("保險資料輸出");
+	    
+	    insuranceItem.addSelectionListener(new MenuItemListener());
+	    exportInsuranceItem.addSelectionListener(new MenuItemListener());
+	    //保險資料 settings --
+	    
+	    
+	    //活動資料 settings ++
+	    activityMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+	    activityMenuHeader.setText("活動");
+	    activityMenu = new Menu(shell, SWT.DROP_DOWN);
+	    activityMenuHeader.setMenu(activityMenu);
+	    
+	    activityDataSearchImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/activity_search_icon_16x16.png"));
+	    activityDataSearchItem = new MenuItem(activityMenu, SWT.PUSH);
+	    activityDataSearchItem.setImage(activityDataSearchImg);
+	    activityDataSearchItem.setText("活動資料查詢");
+	        
+	    exportActivityDataImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/export_activity_icon_16x16.png"));
+	    exportActivityDataItem = new MenuItem(activityMenu, SWT.PUSH);
+	    exportActivityDataItem.setImage(exportActivityDataImg);
+	    exportActivityDataItem.setText("活動資料輸出");
+	    
+	    activityDataSearchItem.addSelectionListener(new MenuItemListener());
+	    exportActivityDataItem.addSelectionListener(new MenuItemListener());
+	    //活動資料 settings --
 	    
 	    editMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
-	    editMenuHeader.setText("&Edit");
+	    editMenuHeader.setText("Edit");
 
 	    editMenu = new Menu(shell, SWT.DROP_DOWN);
 	    editMenuHeader.setMenu(editMenu);
 
 	    editCopyItem = new MenuItem(editMenu, SWT.PUSH);
-	    editCopyItem.setText("&Copy");
+	    editCopyItem.setText("Copy");
 
 	   
 	    editCopyItem.addSelectionListener(new MenuItemListener());
@@ -188,11 +225,12 @@ public class MainUI {
 	    createTopGroup(shell);
 	    createButtomGroup(shell);
 	    shell.open();
-	    while (!shell.isDisposed()) {
+	  while (!shell.isDisposed()) {
 	      if (!display.readAndDispatch())
 	        display.sleep();
 	    }
-	    display.dispose();
+	  
+	   display.dispose();
 	  }
       
 	  
@@ -209,17 +247,51 @@ public class MainUI {
 	      if (((MenuItem) event.widget).getText().equals("離開")) {
 	        shell.close();
 	      }
-	      if(((MenuItem) event.widget).getText().equals("通訊錄(含地址)")) {
-	    	  setAllDataToTable1(mUiDbInterface.getContactInfoAddressHeader(),mUiDbInterface.getContactInfoAddress());
+	      if(((MenuItem) event.widget).getText().equals("通訊錄查詢")) {
+	    	  try {
+				  mContactInfoSearchDialog = new ContactInfoSearchDialog(display);
+	    	  } catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	 
 	      }
-	      if(((MenuItem) event.widget).getText().equals("通訊錄(不含地址)")) {
-	    	  setAllDataToTable1(mUiDbInterface.getContactInfoNoAddressHeader(),mUiDbInterface.getContactInfoNoAddress());
+	   
+	      if(((MenuItem) event.widget).getText().equals("通訊錄輸出")){
+	    	  try {
+	    		  mExportContactInfoDialog = new ExportContactInfoDialog(display);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	      }
-	      if(((MenuItem) event.widget).getText().equals("通訊錄(含地址)輸出")){
-	    	  mExportContactInfoDialog = new ExportContactInfoDialog(display, true);
+	 
+	      if(((MenuItem) event.widget).getText().equals("保險資料查詢")) {
+	    	  try {
+				mInsuranceSearchDialog = new InsuranceSearchDialog(display);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	      }
-	      if(((MenuItem) event.widget).getText().equals("通訊錄(不含地址)輸出")) {
-	    	  mExportContactInfoDialog = new ExportContactInfoDialog(display, false);
+	      if(((MenuItem) event.widget).getText().equals("保險資料輸出")) {
+	    	  mExportInsuranceDialog = new ExportInsuranceDialog(display);
+	      }
+	      if(((MenuItem) event.widget).getText().equals("活動資料查詢")) {
+	    	  try {
+				mActivitySearchDialog = new ActivitySearchDialog(display);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	      }
+	      if(((MenuItem) event.widget).getText().equals("活動資料輸出")) {
+	    	  try {
+				mExportActivityDialog = new ExportActivityDialog(display);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	      }
 	    }
 	  }
@@ -231,7 +303,6 @@ public class MainUI {
 		// TODO Auto-generated method stub
 		 MainUI menuExample = new MainUI();
 	}
-			
 
 	
 	private Composite createTopViewArea (Composite area){
@@ -314,19 +385,19 @@ public class MainUI {
 	        gridData = new GridData(SWT.DEFAULT, SWT.FILL, false, false);
 
 	        queryAllButton = new Button(composite, SWT.PUSH);  
-		    queryAllImg = new Image(display,"img\\query_all_icon_32x32.png");
+		    queryAllImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/query_all_icon_32x32.png"));
 		    queryAllButton.setImage(queryAllImg);
 		    queryAllButton.setText("全部查詢");
 		    
 		 
 		    queryByConditionButton = new Button(composite, SWT.PUSH);
-		    queryByConditionImg = new Image(display,"img\\query_condition_icon_32x32.png");
+		    queryByConditionImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/query_condition_icon_32x32.png"));
 		    queryByConditionButton.setImage(queryByConditionImg);
 		    queryByConditionButton.setText("條件查詢");
 		    
 	
 		    deleteButton = new Button(composite, SWT.PUSH);
-		    deleteImg = new Image(display,"img\\delete_icon_32x32.png");
+		    deleteImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/delete_icon_32x32.png"));
 		    deleteButton.setImage(deleteImg);
 		    deleteButton.setText("刪除");
 		    
@@ -419,7 +490,7 @@ public class MainUI {
 	        gridData = new GridData(SWT.DEFAULT, SWT.FILL, false, false);
 
 	        addButton = new Button(composite, SWT.PUSH);
-	        addImg = new Image(display,"img\\add_icon_32x32.png");
+	        addImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/add_icon_32x32.png"));
 		    addButton.setText("新增");
 		    addButton.setImage(addImg);
 		    

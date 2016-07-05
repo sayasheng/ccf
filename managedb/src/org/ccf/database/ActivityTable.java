@@ -30,7 +30,7 @@ public class ActivityTable {
 	private DBFunctions db = new DBFunctions();
 	private ExcelFileProcess activity_xsl = new ExcelFileProcess();
 	private String selectAllDataSQL= "select * from activity";
-	
+	private String selectYearSQL = "select 年 from activity GROUP BY 年";
 	
 	public void createActivityTable(){
 		db.createTable(activityCreateTableSql);
@@ -121,6 +121,21 @@ public class ActivityTable {
 	public String[][] queryAllFromActivityTable() throws SQLException
 	{
 		return db.queryAllFromTable (selectAllDataSQL,activityTableName);
+	}
+	
+	public String[] queryYearFromActivityTable() throws SQLException{
+		String [] myYear;
+		String [][] data;
+		 
+		data = db.queryAllFromTable(selectYearSQL);
+		myYear = new String[data.length];
+		
+		for (int i=0; i<data.length; i++){
+		for (int j=0; j< 1; j++){ // just one column of data 
+			myYear[i]=data[i][j].toString();
+		}
+	  }
+		return myYear;
 	}
 }
 
