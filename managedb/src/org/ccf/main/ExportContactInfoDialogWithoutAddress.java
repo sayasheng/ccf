@@ -86,6 +86,7 @@ public class ExportContactInfoDialogWithoutAddress extends DialogCombo{
       public ExportContactInfoDialogWithoutAddress(Display display) throws SQLException {
     	  super (display,title,iconpath);		
 		  DialogCombo();
+		  mLabelTextYear = "選擇組別年度:" ;
 		  mComboYearList = getComboYear();
 		  createDialogYearDropList(mDialog);
 	      createDialogDropListToProveYesOrNoConditions(mDialog);

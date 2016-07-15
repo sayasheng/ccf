@@ -7,9 +7,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-public class ExportActivityDialog extends DialogCombo{
-	private static String title = "活動資料輸出條件";
-	private static String iconpath = "img/export_activity_icon_32x32.png";
+public class ExportServiceHoursDialog extends DialogCombo{
+	private static String title = "服務時數輸出條件";
+	private static String iconpath = "img/export_service_hours_icon_32x32.png";
 	private static Display mDisplay;
 	private Listener mListener = new Listener() {
 		@Override
@@ -38,14 +38,14 @@ public class ExportActivityDialog extends DialogCombo{
       };
 	
 	
-	public ExportActivityDialog(Display display) throws SQLException{
+	public ExportServiceHoursDialog(Display display) throws SQLException{
 		  super (display,title,iconpath);
 		  display = mDisplay;
 		  DialogCombo();
-		  mActivityDialogText ="輸出條件經由:";
-		  createActivityDialog(mDialog);
-		  mActivityContainSearchButton.addListener(SWT.Selection, mListener);
-		  mActivityRegisterSearchButton.addListener(SWT.Selection, mListener);
+		  mServiceHoursDialogText ="輸出條件經由:";
+		  createServiceHoursialog(mDialog);
+		  mServiceHoursAwardButton.addListener(SWT.Selection, mListener);
+		  mServiceHoursRegularButton.addListener(SWT.Selection, mListener);
 		  mDialog.pack();
 	      mDialog.open();
 	}

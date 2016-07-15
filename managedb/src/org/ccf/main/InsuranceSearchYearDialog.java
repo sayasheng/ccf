@@ -21,17 +21,21 @@ public class InsuranceSearchYearDialog extends DialogCombo{
 				mDialog.close();
 			} //Cancel
 			else if(event.widget == mOkButton) {
+				MainUI.resetAllTexts();
+				MainUI.setSearchFormText("保險資料資料_年度");
 				years = mDBListComboYear.getText();
+				MainUI.setSearchGroupYearText(years);
+				MainUI.setSearchGroupExitText(mDBListComboYesOrNo.getText());
 				if (mDBListComboYesOrNo.getText().equals("否"))
 					try {
-						 MainUI.setAllDataToTable1(mUiDbInterface.getInsuranceInfoHeader(),mUiDbInterface.getInsuranceInfo(years,false));
+						 MainUI.setAllDataToTable1(mUiDbInterface.getInsuranceInfoHeader(),mUiDbInterface.getInsuranceInfo(years,false),false,0);
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				else
 					try {
-						 MainUI.setAllDataToTable1(mUiDbInterface.getInsuranceInfoHeader(),mUiDbInterface.getInsuranceInfo(years,true));
+						 MainUI.setAllDataToTable1(mUiDbInterface.getInsuranceInfoHeader(),mUiDbInterface.getInsuranceInfo(years,true),false,0);
 						} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -47,6 +51,7 @@ public class InsuranceSearchYearDialog extends DialogCombo{
 	public InsuranceSearchYearDialog(Display display) throws SQLException{
 		  super (display,title,iconpath);		
 		  DialogCombo();
+		  mLabelTextYear = "選擇組別年度:" ;
 		  mComboYearList = getComboYear();
 		  createDialogYearDropList(mDialog);
 	      createDialogDropListToProveYesOrNoConditions(mDialog);

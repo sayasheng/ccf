@@ -20,10 +20,12 @@ public class InsuranceSearchNameDialog extends DialogCombo {
 				mDialog.close();
 			} //Cancel
 			else if(event.widget == mOkButton) {
-				
+				MainUI.resetAllTexts();
+				MainUI.setSearchFormText("保險資料資料_個人姓名");
+				MainUI.setSearchNameText(mDBListComboInsuranceSearchName.getText());
 				//mDBListComboYear.getText();
 				try {
-					MainUI.setAllDataToTable1(mUiDbInterface.getInsuranceInfoHeader(),mUiDbInterface.getInsuranceInfoByName(mDBListComboInsuranceSearchName.getText()));
+					MainUI.setAllDataToTable1(mUiDbInterface.getInsuranceInfoHeader(),mUiDbInterface.getInsuranceInfoByName(mDBListComboInsuranceSearchName.getText()),false,0);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.MessageBox;
 
 public class ExportInsuranceYearDialog extends DialogCombo {
 	private static String title = "保險資料輸出_年度";
-	private static String iconpath = "insurance_search_year_icon_32x32.png";
+	private static String iconpath = "img/insurance_search_year_icon_32x32.png";
 	private static UiDbInterface mUiDbInterface = new UiDbInterface();
 	private String years;
 	private int mDialogWidth = 620;
@@ -85,6 +85,7 @@ public class ExportInsuranceYearDialog extends DialogCombo {
 	public ExportInsuranceYearDialog(Display display) throws SQLException{
 		super (display,title,iconpath);		
 		  DialogCombo();
+		  mLabelTextYear = "選擇組別年度:" ;
 		  mComboYearList = getComboYear();
 		  createDialogYearDropList(mDialog);
 	      createDialogDropListToProveYesOrNoConditions(mDialog);

@@ -15,6 +15,7 @@ import org.ccf.database.InsuranceInfo;
 import org.ccf.database.MeetingTable;
 import org.ccf.database.MeetingTimeTable;
 import org.ccf.database.PersonalInfoTable;
+import org.ccf.database.ServiceHoursAwardAndRegularInfo;
 import org.ccf.database.ServiceHoursTable;
 import org.ccf.database.TakeLeaveTable;
 import org.ccf.database.TeacherLeaderTable;
@@ -42,6 +43,7 @@ public class UiDbInterface {
 	private ContactsInfo mContactsInfo = new ContactsInfo();
 	private InsuranceInfo mInsuranceInfo = new InsuranceInfo();
 	private ActivitySearchAndRegisterInfo mActivitySearchAndRegisterInfo = new ActivitySearchAndRegisterInfo();
+	private ServiceHoursAwardAndRegularInfo mServiceHoursAwardAndRegularInfo = new ServiceHoursAwardAndRegularInfo();
 	
 	public final String[] dblist =
 	          new String[] {
@@ -277,4 +279,20 @@ public class UiDbInterface {
     	return mActivitySearchAndRegisterInfo.exportActivityDataToExcelByYear(directory,year);
     }
     //Activity info --
+    
+    //Service hours award and regular info ++
+    public String[] getServiceHoursAwardHeader () {
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursAwardHeader();
+    }
+    
+    public String[][] getServiceHoursAwardData(String group_year, String search_year) throws SQLException{
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursAwardData(group_year,Integer.valueOf(search_year));
+    }
+    
+    public String[] getServiceHoursAwardPersonalDetailHeader(){
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursAwardPersonalDetailHeader();
+    }
+    public String[][] getServiceHoursAwardPersonalDetail(String seach_name, String search_year) throws SQLException {
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursAwardPersonalDetail(seach_name,Integer.valueOf(search_year));
+    }
 }

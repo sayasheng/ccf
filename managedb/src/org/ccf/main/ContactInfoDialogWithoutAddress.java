@@ -21,17 +21,22 @@ public class ContactInfoDialogWithoutAddress extends DialogCombo{
 					mDialog.close();
 				} //Cancel
 				else if(event.widget == mOkButton) {
+					MainUI.resetAllTexts();
+					MainUI.setSearchFormText("通訊錄(不含地址)資料");
 					years = mDBListComboYear.getText();
+					MainUI.setSearchGroupYearText(years);
+					MainUI.setSearchGroupExitText(mDBListComboYesOrNo.getText());
+					
 					if (mDBListComboYesOrNo.getText().equals("否"))
 						try {
-							 MainUI.setAllDataToTable1(mUiDbInterface.getContactInfoNoAddressHeader(),mUiDbInterface.getContactInfoNoAddress(years,false));
+							 MainUI.setAllDataToTable1(mUiDbInterface.getContactInfoNoAddressHeader(),mUiDbInterface.getContactInfoNoAddress(years,false),false,0);
 						} catch (SQLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					else
 						try {
-							 MainUI.setAllDataToTable1(mUiDbInterface.getContactInfoNoAddressHeader(),mUiDbInterface.getContactInfoNoAddress(years,true));
+							 MainUI.setAllDataToTable1(mUiDbInterface.getContactInfoNoAddressHeader(),mUiDbInterface.getContactInfoNoAddress(years,true),false,0);
 							} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -48,6 +53,7 @@ public class ContactInfoDialogWithoutAddress extends DialogCombo{
 	public ContactInfoDialogWithoutAddress(Display display) throws SQLException{
 		  super (display,title,iconpath);		
 		  DialogCombo();
+		  mLabelTextYear = "選擇組別年度:" ;
 		  mComboYearList = getComboYear();
 		  createDialogYearDropList(mDialog);
 	      createDialogDropListToProveYesOrNoConditions(mDialog);

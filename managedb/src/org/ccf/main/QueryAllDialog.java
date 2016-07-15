@@ -37,6 +37,7 @@ public class QueryAllDialog  {
 			// TODO Auto-generated method stub
 			if (event.widget == mOkButton){
 				try {
+					MainUI.resetAllTexts();
 					MainUI.setTopDBText(mDBListCombo.getText());
 					String mySelect = mDBListCombo.getText();
 					String[][] myData= mUiDbInterface.queryAllDataFromDB(mySelect);
@@ -44,7 +45,7 @@ public class QueryAllDialog  {
 					{
 					  MainUI.setAllDataToTable1(mUiDbInterface.getDBTableHeader(mDBListCombo.getText()));
 					}else{
-					  MainUI.setAllDataToTable1(mUiDbInterface.getDBTableHeader(mDBListCombo.getText()),myData);
+					  MainUI.setAllDataToTable1(mUiDbInterface.getDBTableHeader(mDBListCombo.getText()),myData,false,0);
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block

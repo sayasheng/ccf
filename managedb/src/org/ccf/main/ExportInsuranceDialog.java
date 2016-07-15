@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Listener;
 public class ExportInsuranceDialog extends DialogCombo {
 	private static String title = "保險資料輸出條件";
 	private static String iconpath = "img/export_insurance_icon_32x32.png";
-	private static UiDbInterface mUiDbInterface = new UiDbInterface();
 	private static Display mDisplay;
 	
 	private Listener mListener = new Listener() {

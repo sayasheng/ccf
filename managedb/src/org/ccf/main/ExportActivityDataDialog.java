@@ -84,6 +84,8 @@ public class ExportActivityDataDialog extends DialogCombo{
 	public ExportActivityDataDialog(Display display) throws SQLException{
 		 super (display,title,iconpath);
 		  DialogCombo();
+		  mLabelTextYear = "選擇活動年度:" ;
+		  mLabelTextMonth ="選擇活動月份:" ;
 		  mComboYearList = getComboYear();
 		  createDialogYearDropList(mDialog);
 		  createDialogMonthDropList(mDialog);

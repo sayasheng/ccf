@@ -25,17 +25,22 @@ public class ActivityRegisterSearchDialog extends DialogCombo{
 				mDialog.close();
 			} //Cancel
 			else if(event.widget == mOkButton) {
+				MainUI.resetAllTexts();
+				MainUI.setSearchFormText("活動報名資料");
+				MainUI.setSearchYearText(mDBListComboYear.getText());
 				month = mDBListComboMonth.getText();
+				MainUI.setSearchMonthText(month);
+
 				if (month.equals("全部月份")) {
 				try {
-					MainUI.setAllDataToTable1(mUiDbInterface.getActivityRegisterHeader(),mUiDbInterface.getActivityRegisterDataByYear(mDBListComboYear.getText()));
+					MainUI.setAllDataToTable1(mUiDbInterface.getActivityRegisterHeader(),mUiDbInterface.getActivityRegisterDataByYear(mDBListComboYear.getText()),false,0);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				}else{
 					try {
-						MainUI.setAllDataToTable1(mUiDbInterface.getActivityRegisterHeader(),mUiDbInterface.getActivityRegisterDataByYearAndMonth(mDBListComboYear.getText(),month));
+						MainUI.setAllDataToTable1(mUiDbInterface.getActivityRegisterHeader(),mUiDbInterface.getActivityRegisterDataByYearAndMonth(mDBListComboYear.getText(),month),false,0);
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -77,6 +82,8 @@ public class ActivityRegisterSearchDialog extends DialogCombo{
 	public ActivityRegisterSearchDialog(Display display) throws SQLException{
 	super (display,title,iconpath);		
 	  DialogCombo();
+	  mLabelTextYear = "選擇活動年度:" ;
+	  mLabelTextMonth ="選擇活動月份:" ;
 	  mComboYearList = getComboYear();
 	  createDialogYearDropList(mDialog);
 	  createDialogMonthDropList(mDialog);

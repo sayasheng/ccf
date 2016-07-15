@@ -34,17 +34,22 @@ public class ContactInfoDialogWithAddress extends DialogCombo{
 					mDialog.close();
 				} //Cancel
 				else if(event.widget == mOkButton) {
+					MainUI.resetAllTexts();
+					MainUI.setSearchFormText("通訊錄(含地址)資料");
 					years = mDBListComboYear.getText();
+					MainUI.setSearchGroupYearText(years);
+					MainUI.setSearchGroupExitText(mDBListComboYesOrNo.getText());
+					
 					if (mDBListComboYesOrNo.getText().equals("否"))
 						try {
-							 MainUI.setAllDataToTable1(mUiDbInterface.getContactInfoAddressHeader(),mUiDbInterface.getContactInfoAddress(years,false));
+							 MainUI.setAllDataToTable1(mUiDbInterface.getContactInfoAddressHeader(),mUiDbInterface.getContactInfoAddress(years,false),false,0);
 						} catch (SQLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					else
 						try {
-							 MainUI.setAllDataToTable1(mUiDbInterface.getContactInfoAddressHeader(),mUiDbInterface.getContactInfoAddress(years,true));
+							 MainUI.setAllDataToTable1(mUiDbInterface.getContactInfoAddressHeader(),mUiDbInterface.getContactInfoAddress(years,true),false,0);
 							} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -61,6 +66,7 @@ public class ContactInfoDialogWithAddress extends DialogCombo{
 	public ContactInfoDialogWithAddress(Display display) throws SQLException{
 		  super (display,title,iconpath);		
 		  DialogCombo();
+		  mLabelTextYear = "選擇組別年度:" ;
 		  mComboYearList = getComboYear();
 		  createDialogYearDropList(mDialog);
 	      createDialogDropListToProveYesOrNoConditions(mDialog);
