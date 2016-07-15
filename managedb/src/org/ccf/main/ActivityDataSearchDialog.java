@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Listener;
 
 public class ActivityDataSearchDialog extends DialogCombo{
 	private static String title = "活動內容資料查詢";
-	private static String iconpath = "img\\activity_data_icon_32x32.png";
+	private static String iconpath = "img/activity_data_icon_32x32.png";
 	private UiDbInterface mUiDbInterface = new UiDbInterface();
 	private String month;
 	private Listener mListener = new Listener() {

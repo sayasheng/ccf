@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Listener;
 
 public class ActivityRegisterSearchDialog extends DialogCombo{
 	private static String title = "活動報名資料查詢";
-	private static String iconpath = "img\\activity_register_icon_32x32.png";
+	private static String iconpath = "img/activity_register_icon_32x32.png";
 	private static UiDbInterface mUiDbInterface = new UiDbInterface();
 	private String month;
 	private Listener mListener = new Listener() {

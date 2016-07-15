@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class ServuceHoursAwardSearchDialog extends DialogCombo {
 	private static String title = "歷年服務時數與獲獎統計資料查詢";
-	private static String iconpath = "img\\service_hours_award_icon_32x32.png";
+	private static String iconpath = "img/service_hours_award_icon_32x32.png";
 	private UiDbInterface mUiDbInterface = new UiDbInterface();
     private static Display mDisplay;
 	private Listener mListener = new Listener() {

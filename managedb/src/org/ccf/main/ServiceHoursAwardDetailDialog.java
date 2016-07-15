@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 public class ServiceHoursAwardDetailDialog extends DialogCombo {
 	private static String title = "歷年服務時數與獲獎統計_個人明細";
-	private static String iconpath = "img\\service_hours_award_icon_32x32.png";
+	private static String iconpath = "img/service_hours_award_icon_32x32.png";
 	private UiDbInterface mUiDbInterface = new UiDbInterface();
 	
 	public ServiceHoursAwardDetailDialog(Display display, String name, String year) throws SQLException{
