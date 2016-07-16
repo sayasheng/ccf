@@ -295,4 +295,9 @@ public class UiDbInterface {
     public String[][] getServiceHoursAwardPersonalDetail(String seach_name, String search_year) throws SQLException {
     	return mServiceHoursAwardAndRegularInfo.getServiceHoursAwardPersonalDetail(seach_name,Integer.valueOf(search_year));
     }
+    public boolean exportSerivceHoursAwardData (String directory,String group_year, String search_year) {
+    	return mServiceHoursAwardAndRegularInfo.exportServiceHoursAwardData(directory,group_year,Integer.valueOf(search_year));
+    	
+    }
+    //Service hours award and regular info ++
 }

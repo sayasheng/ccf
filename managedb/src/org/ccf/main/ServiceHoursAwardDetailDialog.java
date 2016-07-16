@@ -28,25 +28,6 @@ public class ServiceHoursAwardDetailDialog extends DialogCombo {
 	      mDialog.open();
 	}
 	
-/*	protected void createDialogTable(Composite dialogshell) {
-		 mScrolledComposite = new ScrolledComposite (dialogshell,SWT.BORDER);
-		 GridData gridLayout = new GridData(SWT.FILL, SWT.FILL, true, true);
-		 gridLayout.heightHint = 200;
-		 gridLayout.widthHint = 500;
-		 mScrolledComposite.setLayoutData(gridLayout);
-
-		 mTable = new Table(mScrolledComposite,SWT.BORDER |SWT.FULL_SELECTION);  
-		 mTable.setHeaderVisible(true);
-		 mTable.setLinesVisible(true);
-		 
-		 mScrolledComposite.setContent(mTable);
-		 mScrolledComposite.setExpandHorizontal(true);
-		 mScrolledComposite.setExpandVertical(true);
-		 mScrolledComposite.setAlwaysShowScrollBars(true);
-		 mScrolledComposite.setMinSize(mTable.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-	      
-	}*/
-	
 	private void setAllDataToTable(String[] header, String[][] data){
 		
 		String [] oneRowData = new String[header.length]; 

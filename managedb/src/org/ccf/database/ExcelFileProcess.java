@@ -1,19 +1,23 @@
 package org.ccf.database;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.io.IOException;
 import java.io.File;
 
 import jxl.Cell;
 import jxl.CellView;
+import jxl.Hyperlink;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.Colour;
 import jxl.read.biff.BiffException;
+import jxl.write.Formula;
 import jxl.write.Label;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
+import jxl.write.WritableHyperlink;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
@@ -22,13 +26,88 @@ import java.io.FileOutputStream;
 public class ExcelFileProcess {
 	DBFunctions db = new DBFunctions();
 	private static WritableWorkbook mWorkbook;
-
+	
+	public boolean exportToExcelWithHyperlink(String[][] data, String[] header, String sheetname, int sheetnumber, int hyperlink_colume)throws SQLException {	
+		Label label;
+		boolean result = false;
+		
+		try {
+			Sheet sheet = mWorkbook.createSheet(sheetname,sheetnumber);          
+			WritableCellFormat cellFormat = new WritableCellFormat();
+		    CellView cell = new CellView();
+		    
+			cellFormat.setAlignment(Alignment.CENTRE); // 對齊
+			cellFormat.setWrap(true); //Wrap text
+			cell.setFormat(cellFormat); //Auto cell size
+			
+			for (int i = 0; i < header.length ;i++){
+				  label = new Label(i, 0, header[i], cellFormat);
+				  ((WritableSheet) sheet).addCell(label);
+				  //Auto cell size
+				  ((WritableSheet) sheet).setColumnView(i, 8);
+			}
+			if(sheetnumber != 0) { //build the single sheet to hold detail information
+			for (int i = 0; i < data.length; i++){
+				for (int j = 0; j <header.length ;j++){
+					 //(i+1) parameter is to prevent table header from being erased by data.
+					 label = new Label (j,i+1,data[i][j],cellFormat);
+					 ((WritableSheet)sheet).addCell(label);
+					 //Auto cell size
+					 cell=sheet.getColumnView(j);
+					  if(cell.getSize() < ((int)data[i][j].toString().length()*350))
+						  cell.setSize((int)data[i][j].toString().length()*350);
+					 ((WritableSheet) sheet).setColumnView(j, cell);
+					// System.out.println("Get data:"+data[i][j].toString());
+				}
+			 }
+			}
+			else { //build the 總計 sheet
+				for (int i = 0; i < data.length; i++){
+					for (int j = 0; j <header.length ;j++){
+						//The first sheet(0) is 總計,so start from sheet(1)
+						Sheet mSheet = mWorkbook.getSheet(i+1); 
+					    //(i+1) parameter is to prevent table header from being erased by data.
+					    label = new Label (j,i+1,data[i][j].toString(),cellFormat);
+						//Insert hyperlink on each row and column 1 (姓名)
+					    if (j == hyperlink_colume) {
+							WritableHyperlink hl = new WritableHyperlink(j,i+1 ,data[i][j].toString(),(WritableSheet) mSheet,0,0);
+							((WritableSheet) sheet).addHyperlink(hl);
+							 }
+					    else {
+						 //sheet
+						 ((WritableSheet)sheet).addCell(label); 
+					    }
+						 //Auto cell size
+						 cell=sheet.getColumnView(j);
+						
+						 if(cell.getSize() < ((int)data[i][j].toString().length()*350))
+							  cell.setSize((int)data[i][j].toString().length()*350);
+						 ((WritableSheet) sheet).setColumnView(j, cell);
+						
+					}
+				}
+			}
+			/**Comment these two lines and rewrite into two individual function is 
+			* because we need to add all data in the sheet at once and write into
+			* workbook together. 
+			**/
+			//mWorkbook.write();
+		   // mWorkbook.close();
+			result = true;
+		}catch (WriteException e) {
+				e.printStackTrace();
+			result = false;
+		 }
+		
+		return result;
+	}
+	
    
 	
     public boolean compareExcelHeaderWithDB(String filename, String[] dbtable) {
     	boolean matchDB = false;
     	int row = 1; //Only need to get header
-    	
+ 
     	try {	
     		Workbook workbook = Workbook.getWorkbook(new File(filename));
     		Sheet sheet = workbook.getSheet(0);
@@ -217,7 +296,7 @@ public class ExcelFileProcess {
 			cellFormat.setAlignment(Alignment.CENTRE); // 對齊
 			cellFormat.setWrap(true); //Wrap text by "/r/n"
 		    cell.setFormat(cellFormat);
-			
+		  
 			
 		    for (int i = 0; i < header.length ;i++){
 				 label = new Label(i, 0, header[i].toString(), cellFormat);
@@ -235,6 +314,7 @@ public class ExcelFileProcess {
 					 ((WritableSheet)sheet).addCell(label); 
 					 //Auto cell size
 					 cell=sheet.getColumnView(j);
+					 
 					  if(cell.getSize() < ((int)data[i][j].toString().length()*350))
 						  cell.setSize((int)data[i][j].toString().length()*350);
 					 ((WritableSheet) sheet).setColumnView(j, cell);

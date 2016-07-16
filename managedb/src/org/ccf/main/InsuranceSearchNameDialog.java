@@ -11,7 +11,6 @@ public class InsuranceSearchNameDialog extends DialogCombo {
 	private static String title = "保險資料搜尋_個人姓名";
 	private static String iconpath = "img/insurance_search_name_icon_32x32.png";
 	private static UiDbInterface mUiDbInterface = new UiDbInterface();
-	private Display mDisplay;
 	private Listener mListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {

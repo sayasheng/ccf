@@ -9,19 +9,19 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 
-public class ExportActivityDataDialog extends DialogCombo{
-	private static String title = "活動內容資料輸出";
-	private static String iconpath = "img/activity_data_icon_32x32.png";
-	private static UiDbInterface mUiDbInterface = new UiDbInterface();
-	private String mErrorFileDialogMessage = "活動內容資料輸出成功!!";
-	private String month;
-	
+public class ExportServiceHoursAwardDialog extends DialogCombo {
+	private static String title = "歷年服務時數與獲獎統計資料輸出";
+	private static String iconpath = "img/service_hours_award_icon_32x32.png";
+	private UiDbInterface mUiDbInterface = new UiDbInterface();
+	private String mErrorFileDialogMessage = "歷年服務時數與獲獎統計資料輸出成功!!";
+
 	private Listener mListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			if(event.widget == mCancelButton){
+			// TODO Auto-generated method stub
+		   if(event.widget == mCancelButton){
 				mDialog.close();
-			}
+			} //Cancel
 			else if(event.widget == mOkButton) {
 				if (mDirPathSelectedText.getText().equals("")){
 					mErrorFileDialog = new MessageBox (mDialog , SWT.ICON_WARNING);
@@ -37,14 +37,9 @@ public class ExportActivityDataDialog extends DialogCombo{
 	  	    		
 	  	    		switch(buttonID) {
 	  	            case SWT.OK:
-	  	            	month = mDBListComboMonth.getText();
-	  					if (month.equals("全部月份")) {
-	  						mUiDbInterface.exportActivityDataToExcelByAllYear(mDirPathSelectedText.getText(), mDBListComboYear.getText());
+	  	            	mUiDbInterface.exportSerivceHoursAwardData(mDirPathSelectedText.getText(), mDBListComboYear.getText(),mDBListComboServiceHoursYear.getText());
+	  	 	
 						//System.out.println(mDirPathSelectedText.getText());	
-	  					}else
-	  					{
-	  						mUiDbInterface.exportActivityDataToExcelByYearAndMonth(mDirPathSelectedText.getText(),mDBListComboYear.getText(),month);
-	  					}
 	  	            	mErrorFileDialog = new MessageBox (mDialog , SWT.ICON_INFORMATION);
 	  	            	mErrorFileDialog.setText("成功");
 	  	            	mErrorFileDialog.setMessage(mErrorFileDialogMessage);
@@ -72,26 +67,30 @@ public class ExportActivityDataDialog extends DialogCombo{
 			}
 		 }
       }; //listener 
-	
-  	private String[] getComboYear() throws SQLException{
-		return mUiDbInterface.getActivityYears();
-	}  
       
-	public ExportActivityDataDialog(Display display) throws SQLException{
-		 super (display,title,iconpath);
-		  DialogCombo();
-		  mLabelTextYear = "選擇活動年度:" ;
-		  mLabelTextMonth ="選擇活動月份:" ;
-		  mComboYearList = getComboYear();
-		  createDialogYearDropList(mDialog);
-		  createDialogMonthDropList(mDialog);
-		  createFileText(mDialog);
-		  createDialogButton(mDialog);
-		  mOkButton.addListener(SWT.Selection, mListener);
-	      mCancelButton.addListener(SWT.Selection, mListener);
-	      mDirPathButton.addListener(SWT.Selection, mListener);
-		  mDialog.setSize(mDialogWidth,mDialogHeigh);
-		  mDialog.pack();
-	      mDialog.open();
+	
+    private String[] getGroupYear() throws SQLException{
+		return mUiDbInterface.getGroupYears();
+	}
+    private String[] getActivityYear() throws SQLException{
+		return mUiDbInterface.getActivityYears();
+	}
+	
+	public ExportServiceHoursAwardDialog(Display display) throws SQLException{
+	super (display,title,iconpath);	
+	  DialogCombo();
+	  mLabelTextYear = "選擇組別年度: ";
+	  mComboYearList = getGroupYear();
+	  mComboServiceHoursYearList = getActivityYear();
+	  createDialogYearDropList(mDialog);
+	  createDialogServiceHoursAwardYearDropList(mDialog);
+	  createFileText(mDialog);
+	  createDialogButton(mDialog);
+	  mOkButton.addListener(SWT.Selection, mListener);
+      mCancelButton.addListener(SWT.Selection, mListener);
+      mDirPathButton.addListener(SWT.Selection, mListener);
+	  mDialog.pack();
+      mDialog.open();
+	
 	}
 }

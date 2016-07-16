@@ -17,7 +17,7 @@ public class GroupTable {
 			+ "(姓名, 年度, 身分, 組別, 職務) values" 
 		    + "(?,?,?,?,?)";
 	private String selectAllDataSQL = "select * from mgroup";
-	private String selectYearSQL = "select 年度 from mgroup GROUP BY 年度";
+	private String selectYearSQL = "select 年度 from mgroup GROUP BY 年度  ORDER BY (0+年度)";
 	private String selectMemberNameSQL = "select 姓名 from mgroup GROUP BY 姓名";
 	private DBFunctions db = new DBFunctions();
 	private ExcelFileProcess group_xsl = new ExcelFileProcess();

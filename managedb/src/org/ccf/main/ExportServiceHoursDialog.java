@@ -16,22 +16,22 @@ public class ExportServiceHoursDialog extends DialogCombo{
 		public void handleEvent(Event event) {
 			// TODO Auto-generated method stub
 		
-			if(event.widget == mActivityContainSearchButton){
+			if(event.widget == mServiceHoursAwardButton){
 				try {
-					ExportActivityDataDialog mExportActivityDataDialog = new ExportActivityDataDialog(mDisplay);
+					ExportServiceHoursAwardDialog mExportServiceHoursAwardDialog = new ExportServiceHoursAwardDialog(mDisplay);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				mDialog.close();
 			}
-			else if(event.widget == mActivityRegisterSearchButton) {
-				try {
+			else if(event.widget == mServiceHoursRegularButton) {
+			/*	try {
 					ExportActivityRegisterDialog mActivityRegisterSearchDialog = new ExportActivityRegisterDialog(mDisplay);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}*/
 				mDialog.close();
 			}
 		}

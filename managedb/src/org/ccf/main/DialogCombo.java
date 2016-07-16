@@ -52,6 +52,10 @@ public abstract class DialogCombo {
 	protected String mLabelTextMonth = "選擇月份: ";
 	protected ScrolledComposite  mScrolledComposite;
 	protected Table mTable;
+	protected int mDialogWidth = 620;
+	protected int mDialogHeigh = 100;
+	protected MessageBox  mErrorFileDialog;
+	
 	
 	private String mTitleText;
 	private String mIconPath;

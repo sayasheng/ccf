@@ -43,8 +43,6 @@ public class ServuceHoursAwardSearchDialog extends DialogCombo {
 				                 for (int col = 0; col < MainUI.topTable.getColumnCount(); col++) {
 				                     Rectangle rect = item.getBounds(col);
 				                     if (rect.contains(pt)) {
-				                    	 //System.out.println("Test"+MainUI.getSearchGroupYearText());
-				                         //System.out.println("Get row is" + item.getText(1));
 				                         if(!item.getText(1).equals("")){
 				                    	 try {
 											ServiceHoursAwardDetailDialog mServiceHoursAwardDetailDialog = new ServiceHoursAwardDetailDialog(mDisplay,item.getText(1),MainUI.getSearchYearText());
@@ -68,6 +66,9 @@ public class ServuceHoursAwardSearchDialog extends DialogCombo {
       }; //listener 
       
 	private String[] getGroupYear() throws SQLException{
+		return mUiDbInterface.getGroupYears();
+	}
+	private String[] getActivityYear() throws SQLException{
 		return mUiDbInterface.getActivityYears();
 	}
 	
@@ -77,7 +78,7 @@ public class ServuceHoursAwardSearchDialog extends DialogCombo {
 	  DialogCombo();
 	  mLabelTextYear = "選擇組別年度: ";
 	  mComboYearList = getGroupYear();
-	  mComboServiceHoursYearList = getGroupYear();
+	  mComboServiceHoursYearList = getActivityYear();
 	  createDialogYearDropList(mDialog);
 	  createDialogServiceHoursAwardYearDropList(mDialog);
 	  createDialogButton(mDialog);

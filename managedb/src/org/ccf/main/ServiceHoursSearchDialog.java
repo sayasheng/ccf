@@ -17,18 +17,6 @@ public class ServiceHoursSearchDialog extends DialogCombo{
 			// TODO Auto-generated method stub
 		
 			if(event.widget == mServiceHoursAwardButton){
-				/*try {
-					ExportActivityDataDialog mExportActivityDataDialog = new ExportActivityDataDialog(mDisplay);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
-				/*try {
-					mUiDbInterface.getServiceHoursAwardData();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
 				try {
 					ServuceHoursAwardSearchDialog mServuceHoursAwardSearchDialog = new ServuceHoursAwardSearchDialog(mDisplay);
 				} catch (SQLException e) {

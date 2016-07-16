@@ -13,12 +13,8 @@ public class ExportActivityRegisterDialog extends DialogCombo{
 	private static String title = "活動報名資料輸出";
 	private static String iconpath = "img/activity_register_icon_32x32.png";
 	private static UiDbInterface mUiDbInterface = new UiDbInterface();
-	private static Display mDisplay;
-	private MessageBox  mErrorFileDialog;
-	private String mErrorFileDialogMessage = "活動報名資料 輸出成功!!";
+	private String mErrorFileDialogMessage = "活動報名資料輸出成功!!";
 	private String month;
-	private int mDialogWidth = 620;
-	private int mDialogHeigh = 100;
 	private Listener mListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {

@@ -19,10 +19,6 @@ public class ExportContactInfoDialogWithAddress extends DialogCombo{
 	private static String iconpath = "img/contact_address_icon_32x32.png";
 	private static UiDbInterface mUiDbInterface = new UiDbInterface();
 	private String years ;
-	private int mDialogWidth = 620;
-	private int mDialogHeigh = 100;
-	
-	private MessageBox  mErrorFileDialog;
 	private String mErrorFileDialogMessage = "通訊錄(含地址)輸出成功!!";
 	
 	private Listener mListener = new Listener() {

@@ -65,19 +65,6 @@ public class ServiceHoursAwardAndRegularInfo {
 				db.rs = db.pst.executeQuery();
 			/* db.stat = db.con.createStatement(); 
 			  db.rs = db.stat.executeQuery(serviceHoursAwardSQL);*/
-
-				
-			
-			/*	
-		      while(db.rs.next()) 
-		      {
-		    	  try {
-					System.out.println(new String (db.rs.getBytes("活動"),"UTF-8"));
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-		      } */
 				
 				int rows;
 				if (!db.rs.last()){
@@ -141,6 +128,7 @@ public class ServiceHoursAwardAndRegularInfo {
 		 
 		return myData;
 	}
+	
 	public String[][] getServiceHoursAwardPersonalDetail(String seach_name, int seach_year) throws SQLException
 	{
 		
@@ -158,19 +146,6 @@ public class ServiceHoursAwardAndRegularInfo {
 			  /* db.stat = db.con.createStatement(); 
 			  db.rs = db.stat.executeQuery(serviceHoursAwardPeronalDetailSQL);*/
 
-				
-			
-			/*	
-		      while(db.rs.next()) 
-		      {
-		    	  try {
-					System.out.println(new String (db.rs.getBytes("活動"),"UTF-8"));
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-		      } */
-				
 				int rows;
 				if (!db.rs.last()){
 					System.out.println("[ServiceHoursAwardAndRegularInfo]getServiceHoursAwardPersonalDetail: No data.");
@@ -209,5 +184,44 @@ public class ServiceHoursAwardAndRegularInfo {
 		return null;
 	 }
 	
+	
+	public boolean exportServiceHoursAwardData(String directory,String groupyear, int searchyear) {
+		boolean result = false ;
+		String [][] myData =null;
+		String [][] mySingleData = null;
+		servicehoursawardandregularinfo_xsl.createWorkbook(directory, groupyear+"歷年服務時數及獲獎_統計至"+searchyear);
+		
+		try {
+			//Get all service hours and award data
+			myData = getServiceHoursAwardData (groupyear, searchyear);
+			
+			for (int i =0 ; i < myData.length ;i++){
+				//System.out.println(myData[i][1]);
+				//1. Get 姓名 (column 1) from all data and query database then write to a excel file
+				mySingleData = getServiceHoursAwardPersonalDetail(myData[i][1],searchyear);	
+				//2.Start the sheet number from 1 to build the sheet for single data.
+			    //Assign hyperlink_colume to (0) because we don't need to any hyper link in each single data sheet
+				servicehoursawardandregularinfo_xsl.exportToExcelWithHyperlink(mySingleData,getServiceHoursAwardPersonalDetailHeader(),myData[i][1],i+1,0);
+			}
+			 //3.Give the sheet number (0) to build the main sheet.
+			 //Assign hyperlink_colume to (1) to build the hyperlink for each column 1
+			servicehoursawardandregularinfo_xsl.exportToExcelWithHyperlink(myData,getServiceHoursAwardHeader(),"總計",0,1);
+			/*
+			for (int i = 0 ; i<mySignleData.length ; i++ ){
+				for (int j=0; j<serviceHoursAwardPersonalDetailHeader.length; j++ ) {
+					System.out.println(mySignleData[i][j]);
+				}
+			}*/
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		result = servicehoursawardandregularinfo_xsl.writeWorkbook();
+		if(result == false) 
+			return result;
+		result = servicehoursawardandregularinfo_xsl.closeWorkbook();
+	  return result;
+	}
 	
 }

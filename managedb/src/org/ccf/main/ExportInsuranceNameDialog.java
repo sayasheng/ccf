@@ -13,10 +13,8 @@ public class ExportInsuranceNameDialog extends DialogCombo {
 	private static String title = "保險資料輸出_個人姓名";
 	private static String iconpath = "img/insurance_search_name_icon_32x32.png";
 	private static UiDbInterface mUiDbInterface = new UiDbInterface();
-	private MessageBox  mErrorFileDialog;
 	private String mErrorFileDialogMessage = "保險資料輸出(個人姓名)輸出成功!!";
-	private int mDialogWidth = 620;
-	private int mDialogHeigh = 100;
+
 	private Listener mListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {

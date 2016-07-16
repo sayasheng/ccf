@@ -14,9 +14,6 @@ public class ExportInsuranceYearDialog extends DialogCombo {
 	private static String iconpath = "img/insurance_search_year_icon_32x32.png";
 	private static UiDbInterface mUiDbInterface = new UiDbInterface();
 	private String years;
-	private int mDialogWidth = 620;
-	private int mDialogHeigh = 100;
-	private MessageBox  mErrorFileDialog;
 	private String mErrorFileDialogMessage = "保險資料輸出(年度)輸出成功!!";
 	private Listener mListener = new Listener() {
 		@Override
