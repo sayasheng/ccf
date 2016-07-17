@@ -600,12 +600,12 @@ public class MainUI {
 		    
 		    importDBButton = new Button(composite, SWT.PUSH);
 		    importDBImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/import_icon_32x32.png"));
-	        importDBButton.setText("資料庫資料輸出");
+	        importDBButton.setText("資料庫資料輸入");
 	        importDBButton.setImage(importDBImg);
 		    
 		    exportDBButton = new Button(composite, SWT.PUSH);
 	        exportDBImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/export_icon_32x32.png"));
-	        exportDBButton.setText("資料庫資料輸入");
+	        exportDBButton.setText("資料庫資料輸出");
 	        exportDBButton.setImage(exportDBImg);
 		    
 		    //Listener

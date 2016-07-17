@@ -8,7 +8,14 @@ public class DBFunctions {
 	public  Statement stat = null; //statement passed to sql db
 	public  ResultSet rs = null; //result set
 	public  PreparedStatement pst = null; //the variable passed to sql db, using ? for variable
-	
+	// JDBC driver name and database URL
+	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+	private static final String DB_URL = "jdbc:mysql://localhost/";
+
+	 //  Database credentials
+	private static final String USER = "root";
+	private static final String PASS = "1234";
+	   
 	//private String dropdbSQL = "DROP TABLE User";
 	private String insertdbSQL = "insert into activityInfo"
 			+ "(ACTIVITY, SERVICE_INFO, TEAM_IN_CHARGE, PERSON_IN_CHARGE, PEOPLE_REQUIRE, ACTIVITY_YEAR, AM, PM) values" 
@@ -18,24 +25,51 @@ public class DBFunctions {
 	
 	public void createConnection(){
 		try {
-				//Register driver
-				Class.forName("org.gjt.mm.mysql.Driver"); 
-				/*get connection
-				 *localhost:server name
-				 *3306: port number
-				 *test: DB name
-				 **/
-				//con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "1234");
-				//con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ccf?useUnicode=true&characterEncoding=Big5",
-				con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ccf?useUnicode=true&characterEncoding=utf-8","root","1234");
+			//STEP 1: Register JDBC driver
+		      Class.forName("org.gjt.mm.mysql.Driver");
+
+		    //STEP 2: Open a connection
+		      System.out.println("Connecting to database...");
+		      con = DriverManager.getConnection(DB_URL, USER, PASS);
+
+		    //STEP 3: Check if database exist, if not and create one directly.
+		      checkIfDatabaseExist();
+		    
+		    //STEP 4: Connect
+		     /*get connection
+			  *localhost:server name
+			  *3306: port number
+			  *test: DB name
+			  **/
+		      con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ccf?useUnicode=true&characterEncoding=utf-8","root","1234");
+			//Register driver
+			//Class.forName("org.gjt.mm.mysql.Driver"); 
+			//con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "1234");
+			//con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ccf?useUnicode=true&characterEncoding=Big5", 
+			//con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ccf?useUnicode=true&characterEncoding=utf-8","root","1234");
 		}catch (ClassNotFoundException e){
-			System.out.println("DriverClassNotFound:"+e.toString());
+			System.out.println("[DBFunctions]DriverClassNotFound:"+e.toString());
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public boolean checkIfTableExists(String tableName){
+	public void checkIfDatabaseExist() {
+		String checkDBExistSQL = "CREATE DATABASE IF NOT EXISTS ccf";
+		System.out.println("[DBFunction_checkIfDatabaseExist]:Check if database exist");
+		try{ 
+			if(con == null)
+			  createConnection();
+		      stat = con.createStatement(); 
+		      stat.executeUpdate(checkDBExistSQL); 
+		    }catch(SQLException e){ 
+		      System.out.println("checkIfDatabaseExist Exception:" + e.toString()); 
+		    }finally{ 
+		      close(); 
+		    } 
+		
+	}
+	public boolean checkIfTableExist(String tableName){
 		boolean exist = false;
 		
 		try{
@@ -148,14 +182,14 @@ public class DBFunctions {
 	
 	public void dropTable(String tableName){ 
 		String dropdbSQL = "DROP TABLE If Exists " + tableName;
-		System.out.print(dropdbSQL);	
+		System.out.println("[DBFunction_dropTable]"+dropdbSQL);	
 		try{ 
 			if(con == null)
 			  createConnection();
 		      stat = con.createStatement(); 
 		      stat.executeUpdate(dropdbSQL); 
 		    }catch(SQLException e){ 
-		      System.out.println("DropDB Exception:" + e.toString()); 
+		      System.out.println("[DBFunction_dropTable] Exception:" + e.toString()); 
 		    }finally{ 
 		      close(); 
 		    } 
