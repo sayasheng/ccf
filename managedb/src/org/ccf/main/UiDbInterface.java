@@ -8,6 +8,7 @@ import org.ccf.database.ActivityTable;
 import org.ccf.database.AwardTable;
 import org.ccf.database.BrochureTable;
 import org.ccf.database.ContactsInfo;
+import org.ccf.database.DBFunctions;
 import org.ccf.database.EmergencyContactTable;
 import org.ccf.database.ExcelFileProcess;
 import org.ccf.database.GroupTable;
@@ -17,6 +18,7 @@ import org.ccf.database.MeetingTimeTable;
 import org.ccf.database.PersonalInfoTable;
 import org.ccf.database.ServiceHoursAwardAndRegularInfo;
 import org.ccf.database.ServiceHoursTable;
+import org.ccf.database.ServiceItemIdTable;
 import org.ccf.database.TakeLeaveTable;
 import org.ccf.database.TeacherLeaderTable;
 import org.ccf.database.TrainingTable;
@@ -36,6 +38,7 @@ public class UiDbInterface {
 	private MeetingTimeTable mMeetingTimeTable = new MeetingTimeTable();
 	private PersonalInfoTable mPersonalInfoTable = new PersonalInfoTable();
 	private ServiceHoursTable mServiceHoursTable = new ServiceHoursTable();
+	private ServiceItemIdTable mServiceItemIdTable = new ServiceItemIdTable();
 	private TakeLeaveTable mTakeLeaveTable = new TakeLeaveTable();
 	private TeacherLeaderTable mTeacherLeaderTable = new TeacherLeaderTable();
 	private TrainingTable mTrainingTable = new TrainingTable();
@@ -44,6 +47,7 @@ public class UiDbInterface {
 	private InsuranceInfo mInsuranceInfo = new InsuranceInfo();
 	private ActivitySearchAndRegisterInfo mActivitySearchAndRegisterInfo = new ActivitySearchAndRegisterInfo();
 	private ServiceHoursAwardAndRegularInfo mServiceHoursAwardAndRegularInfo = new ServiceHoursAwardAndRegularInfo();
+	private  DBFunctions mDBFunctions = new DBFunctions();
 	
 	public final String[] dblist =
 	          new String[] {
@@ -58,7 +62,8 @@ public class UiDbInterface {
 	            "開會出席紀錄 (TakeLeave)",
 	            "會議時間紀錄 (MeetingTime)",
 	            "服務時數統計 (ServiceHours)",
-	            "歷屆指導老師 (TeacherLeader)",	            
+	            "歷屆指導老師 (TeacherLeader)",	
+	            "服務項目代碼與名稱 (ServiceItemId)",        
 	            "隊員緊急連絡人資料 (EmergencyContact)"};
 	
    public int calculateTextSizeWidth (String filepath ,Text text){
@@ -72,7 +77,7 @@ public class UiDbInterface {
 		
 	     return width;
    }
-   
+  //Database ++ 
    public boolean exportSelectedDbToExcel (String dbname, String directory){
 	   if (dbname.equals(dblist[0])){
 		   return mGroupTable.exportGroupTableToExcel(directory);   
@@ -98,6 +103,8 @@ public class UiDbInterface {
 		   return mServiceHoursTable.exportServiceHoursTableToExcel(directory);
 	   }else if (dbname.equals(dblist[11])){
 		   return mTeacherLeaderTable.exportTeacherLeaderTableToExcel(directory);
+	   }else if (dbname.equals(dblist[12])) {
+		   return mServiceItemIdTable.exportServiceItemIdTableToExcel(directory);
 	   }
 	   	return mEmergencyContactTable.exportEmergencyContactTableToExcel(directory);
 	   
@@ -133,6 +140,8 @@ public class UiDbInterface {
 		   return mServiceHoursTable.importExcelToServiceHourseTable(filepath);
 	   }else if (dbname.equals(dblist[11])){
 		   return mTeacherLeaderTable.importExcelToTeacherLeaderTable(filepath);
+	   }else if (dbname.equals(dblist[12])) {
+		   return mServiceItemIdTable.importExcelToServiceItemIdTable(filepath);
 	   }
 	   	return mEmergencyContactTable.importExcelToEmergencyContactTable(filepath);
 	   
@@ -164,6 +173,8 @@ public class UiDbInterface {
 		   return mServiceHoursTable.serviceHoursHeader;
 	   }else if (selectedTable.equals(dblist[11])){
 		   return mTeacherLeaderTable.teacherLeaderHeader;
+	   }else if (selectedTable.equals(dblist[12])){
+		   return mServiceItemIdTable.serviceItemIdHeader;
 	   }
 		return mEmergencyContactTable.emergencyContactHeader;	   
    }
@@ -193,10 +204,21 @@ public class UiDbInterface {
   		   return mServiceHoursTable.queryAllFromServiceHoursTable();
   	   }else if (dbname.equals(dblist[11])){
   		   return mTeacherLeaderTable.queryAllFromTeacherLeaderTable();
+  	   }else if (dbname.equals(dblist[12])){
+  		   return mServiceItemIdTable.queryAllFromServiceItemIdTable();
   	   }
   	   	return mEmergencyContactTable.queryAllFromEmergencyContactTable();
     }
-	
+   //Database --
+    public boolean createDatabase() {
+    	return mDBFunctions.createDatabase();
+    }
+    public boolean checkDatabaseTable() {
+    	return mDBFunctions.checkDatabaseTable();
+    }
+	public String getTableNotExists() {
+		return mDBFunctions.getTableNotExists();
+	}
     public String[] getGroupYears() throws SQLException{
     	return mGroupTable.queryYearFromGroupTable();
     }
@@ -296,8 +318,31 @@ public class UiDbInterface {
     	return mServiceHoursAwardAndRegularInfo.getServiceHoursAwardPersonalDetail(seach_name,Integer.valueOf(search_year));
     }
     public boolean exportSerivceHoursAwardData (String directory,String group_year, String search_year) {
-    	return mServiceHoursAwardAndRegularInfo.exportServiceHoursAwardData(directory,group_year,Integer.valueOf(search_year));
-    	
+    	return mServiceHoursAwardAndRegularInfo.exportServiceHoursAwardData(directory,group_year,Integer.valueOf(search_year)); 	
+    }
+    public String[] getServiceHoursRegularHeader (){
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursRegularHeader();
+    }
+    public String[] getServiceHoursRegularAllHoursSortHeader(){
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursRegularAllHoursSortHeader();
+    }
+    public String[] getServiceHoursRegularServiceHoursSortHeader(){
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursRegularServiceHoursSortHeader();
+    }
+    public String[] getServiceHoursRegularPersonalDetailHeader(){
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursRegularPersonalDetailHeader();
+    }
+    public String[][] getServiceHoursRegularData(String groupyear, String searchyear) throws SQLException{
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursRegularData(groupyear, Integer.valueOf(searchyear));
+    }
+    public String[][] getServiceHoursRegularAllHoursSortData(String groupyear, String searchyear) throws SQLException{
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursRegularAllHoursSortData(groupyear, Integer.valueOf(searchyear));
+    }
+    public String[][] getServiceHoursRegularServiceHoursSortData (String groupyear, String searchyear) throws SQLException{
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursRegularServiceHoursSortData(groupyear, Integer.valueOf(searchyear));
+    }
+    public String[][] getServiceHoursRegularPersonalDetailData (String searchyear, String searchname) throws SQLException{
+    	return mServiceHoursAwardAndRegularInfo.getServiceHoursRegularPersonalDetailData(Integer.valueOf(searchyear),searchname);
     }
     //Service hours award and regular info ++
 }

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 public class ActivityTable {
 	public 	String[] activityHeader = {"活動","活動負責人","年","起始月","起始日",
 									   "起始時間","結束月","結束日","結束時間",
-									   "地點","人力","活動內容","服務人次"};
+									   "地點","人力","活動內容"};
 	private String activityTableName = "activity";
 	private String activityCreateTableSql ="CREATE TABLE activity (" + 
 	"	 活動	TEXT" +
@@ -19,13 +19,12 @@ public class ActivityTable {
 	"  , 結束時間	VARCHAR(30)" +
 	"  , 地點	VARCHAR(30)" +
 	"  , 人力 	VARCHAR(30)" +
-	"  , 活動內容	VARCHAR(50)" +
-	"  , 服務人次	VARCHAR(30))";
+	"  , 活動內容	VARCHAR(50))";
 
 
 	private String insertAllDataSQL = "insert into activity"
-			+ "(活動, 活動負責人, 年, 起始月, 起始日, 起始時間, 結束月, 結束日, 結束時間, 地點, 人力, 活動內容, 服務人次) values" 
-		    + "(?,?,?,?,?,?,?,?,?,?,?,?,?)"; 
+			+ "(活動, 活動負責人, 年, 起始月, 起始日, 起始時間, 結束月, 結束日, 結束時間, 地點, 人力, 活動內容) values" 
+		    + "(?,?,?,?,?,?,?,?,?,?,?,?)"; 
 	
 	private DBFunctions db = new DBFunctions();
 	private ExcelFileProcess activity_xsl = new ExcelFileProcess();
@@ -40,7 +39,7 @@ public class ActivityTable {
 	}
 	
 	public void insertAllDataIntoActivityTable(String activity, String personInCharge, String startYear, String startMonth, String startDay, String startTime,
-			   	String endMonth, String endDay, String endTime, String place, String hrpower, String content, String number) throws SQLException
+			   	String endMonth, String endDay, String endTime, String place, String hrpower, String content) throws SQLException
 	{
 		if (db.con == null)
 		{
@@ -60,7 +59,6 @@ public class ActivityTable {
 			db.pst.setString(10, place);
 			db.pst.setString(11, hrpower);
 			db.pst.setString(12, content);
-			db.pst.setString(13, number);
 			db.pst.executeUpdate(); 
 	    }catch(SQLException e){ 
 	      System.out.println("insertDataActivityTable Exception :" + e.toString()); 
@@ -97,8 +95,7 @@ public class ActivityTable {
 		    		if (j== (activityHeader.length-1)){
 		    			insertAllDataIntoActivityTable(myData[0],myData[1]
 		    					,myData[2],myData[3],myData[4],myData[5],myData[6]
-		    					,myData[7],myData[8],myData[9],myData[10],myData[11]
-		    				    ,myData[12]);
+		    					,myData[7],myData[8],myData[9],myData[10],myData[11]);
 		    			//3-D. Reset myData array after data insert.
 		    			myData = new String[activityHeader.length];
 		    		}

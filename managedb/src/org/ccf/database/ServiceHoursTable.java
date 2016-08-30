@@ -4,12 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 
 public class ServiceHoursTable {
-	public	String[] serviceHoursHeader= {"姓名","活動","serviceType","年","月","時數","可累計"};
+	public	String[] serviceHoursHeader= {"姓名","活動","serviceType","服務人次","年","月","時數","可累計"};
 	private String serviceHoursTableName = "servicehours";
 	private String serviceHoursCreateTableSql ="CREATE TABLE servicehours (" + 
 	"	   姓名	VARCHAR(50) NOT NULL" +
 	"  , 活動	TEXT NOT NULL" +
 	"  , serviceType VARCHAR(50) " +
+	"  , 服務人次	VARCHAR(30) " +
 	"  , 年	VARCHAR(30) NOT NULL" +
 	"  , 月	VARCHAR(30) NOT NULL " +
 	"  , 時數	VARCHAR(50) NOT NULL" +
@@ -17,8 +18,8 @@ public class ServiceHoursTable {
 
 
 	private String insertAllDataSQL = "insert into servicehours"
-			+ "(姓名, 活動, serviceType, 年, 月, 時數, 可累計) values" 
-		    + "(?,?,?,?,?,?,?)"; 
+			+ "(姓名, 活動, serviceType, 服務人次, 年, 月, 時數, 可累計) values" 
+		    + "(?,?,?,?,?,?,?,?)"; 
 	
 	private String selectAllDataSQL= "select * from servicehours";
 	private String selectByNameSQL = "select * from servicehours where 姓名 = ?";
@@ -41,7 +42,7 @@ public class ServiceHoursTable {
 		return serviceHoursHeader;
 	}
 
-	public void insertAllDataIntoServiceHoursTable(String name, String activity, String servicetype, String year, String month, String totalhrs, String isaccumulated) throws SQLException
+	public void insertAllDataIntoServiceHoursTable(String name, String activity, String servicetype, String number,String year, String month, String totalhrs, String isaccumulated) throws SQLException
 	{
 		if (db.con == null)
 		{
@@ -53,10 +54,11 @@ public class ServiceHoursTable {
 			db.pst.setString(1, name); 
 			db.pst.setString(2, activity); 
 			db.pst.setString(3, servicetype);
-			db.pst.setString(4, year);
-			db.pst.setString(5, month);
-			db.pst.setString(6, totalhrs);
-			db.pst.setString(7, isaccumulated);
+			db.pst.setString(4, number);
+			db.pst.setString(5, year);
+			db.pst.setString(6, month);
+			db.pst.setString(7, totalhrs);
+			db.pst.setString(8, isaccumulated);
 			db.pst.executeUpdate(); 
 	    }catch(SQLException e){ 
 	      System.out.println("insertDataServiceHoursTable Exception :" + e.toString()); 
@@ -271,7 +273,7 @@ public class ServiceHoursTable {
 		    		//3-C. Write one row of data into database
 		    		if (j== (serviceHoursHeader.length-1)){
 		    			insertAllDataIntoServiceHoursTable(myData[0],myData[1],
-		    					myData[2],myData[3],myData[4],myData[5],myData[6]);
+		    					myData[2],myData[3],myData[4],myData[5],myData[6],myData[7]);
 		    			//3-D. Reset myData array after data insert.
 		    			myData = new String[serviceHoursHeader.length];
 		    		}

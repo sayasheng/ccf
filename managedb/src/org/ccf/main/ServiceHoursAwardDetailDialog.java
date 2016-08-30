@@ -22,7 +22,6 @@ public class ServiceHoursAwardDetailDialog extends DialogCombo {
 		  createDialogNameLabelAndText(mDialog);
 		  createDialogTable(mDialog);
 		  mSerivceHoursAwardNameText.setText(name);
-		  mUiDbInterface.getServiceHoursAwardPersonalDetail(name,year);
 		  setAllDataToTable(mUiDbInterface.getServiceHoursAwardPersonalDetailHeader(),mUiDbInterface.getServiceHoursAwardPersonalDetail(name,year));
 		  mDialog.pack();
 	      mDialog.open();

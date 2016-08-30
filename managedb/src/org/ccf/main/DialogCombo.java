@@ -4,6 +4,8 @@ import java.sql.SQLException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -18,6 +20,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
@@ -34,6 +38,8 @@ public abstract class DialogCombo {
 	protected Label mDBNameLabelMonth;
 	protected Label mDBNameLabelServiceHoursYear;
 	protected Label mDBNameLabelServiceHoursAwardName;
+	protected Label mDBNameLabelServiceHoursGroupYear;
+	protected Label mDBNameLabelServiceHoursSearchYear;
 	protected Button mOkButton,mCancelButton;
 	protected Button mNameSearchButton, mYearSearchButton,  mContactInfoWithAddressButton,mContactInfoWithoutAddressButton,mActivityContainSearchButton,mActivityRegisterSearchButton,
 					 mServiceHoursAwardButton,mServiceHoursRegularButton;
@@ -45,17 +51,21 @@ public abstract class DialogCombo {
 	protected UiDbInterface mUiDbInterface = new UiDbInterface();
 	protected DirectoryDialog mDirectoryDialog;
 	protected Button mDirPathButton;
-	protected Text mDirPathSelectedText,mSerivceHoursAwardNameText;
+	protected Text mDirPathSelectedText,mSerivceHoursAwardNameText,mServiceHoursGroupYearText,mServiceHoursSerachYearText;
 	protected String mContactInfoDialogText,mInsuranceDialogText,mActivityDialogText,mServiceHoursDialogText;
 	protected String mLabelTextYear = "選擇年度: ";
 	protected String mLabelTextServiceHoursYear = "選擇歷史服務時數及獲獎統計年度: ";
 	protected String mLabelTextMonth = "選擇月份: ";
-	protected ScrolledComposite  mScrolledComposite;
-	protected Table mTable;
+	protected ScrolledComposite  mScrolledComposite,mScrolledCompositeTotalHours,mScrolledCompositeServiceHours,mScrolledCompositePersonalDetail;
+	protected Table mTable,mTableTotalHours,mTableServiceHours,mTablePersonalDetail;
 	protected int mDialogWidth = 620;
 	protected int mDialogHeigh = 100;
 	protected MessageBox  mErrorFileDialog;
-	
+	protected Composite compositeFolder;
+	protected GridLayout gridLayoutFolder;
+	protected TabFolder tabFolder;
+	protected TabItem itemTotalHours,itemServiceHours,itemPersonalDetail;
+  
 	
 	private String mTitleText;
 	private String mIconPath;
@@ -319,7 +329,7 @@ public abstract class DialogCombo {
 	
 	protected void createDialogServiceHoursAwardYearDropList(Composite dialogshell){
     	Composite composite = new Composite(dialogshell, SWT.NONE);
-        GridLayout gridLayout = new GridLayout(2, false);
+        GridLayout gridLayout = new GridLayout(6, false);
         gridLayout.marginWidth = 0;
         gridLayout.marginHeight = 0;
         gridLayout.verticalSpacing = 0;
@@ -346,9 +356,7 @@ public abstract class DialogCombo {
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
         composite.setLayoutData(gridData);
 
-        gridData = new GridData(SWT.DEFAULT, SWT.FILL, false, false);
-
-		mDBNameLabelServiceHoursAwardName = new Label (composite,SWT.NONE);
+        mDBNameLabelServiceHoursAwardName = new Label (composite,SWT.NONE);
 		mDBNameLabelServiceHoursAwardName.setText("姓名: ");
 		mSerivceHoursAwardNameText = new Text(composite,SWT.SINGLE | SWT.BORDER);
 		mSerivceHoursAwardNameText.setEditable(false);
@@ -377,5 +385,112 @@ public abstract class DialogCombo {
 	      
 	}
 	
+
+	protected void createServiceHoursRegularSearchDetailInfo(Composite dialogshell) {
+		Composite composite = new Composite(dialogshell, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(6, false);
+        gridLayout.marginWidth = 0;
+        gridLayout.marginHeight = 0;
+        gridLayout.verticalSpacing = 0;
+        gridLayout.horizontalSpacing = 5;
+        composite.setLayout(gridLayout);
+
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+        composite.setLayoutData(gridData);
+
+        mDBNameLabelServiceHoursGroupYear =  new Label (composite,SWT.NONE);
+        mDBNameLabelServiceHoursGroupYear.setText("組別年度: ");
+        mServiceHoursGroupYearText =  new Text(composite,SWT.SINGLE | SWT.BORDER);
+        mServiceHoursGroupYearText.setEditable(false);
+        mServiceHoursGroupYearText.setEnabled(false);
+        mServiceHoursGroupYearText.setBackground(MainUI.mTextColor);
+        
+        mDBNameLabelServiceHoursSearchYear =  new Label (composite,SWT.NONE);
+        mDBNameLabelServiceHoursSearchYear.setText("查詢年度: ");
+        mServiceHoursSerachYearText =  new Text(composite,SWT.SINGLE | SWT.BORDER);
+        mServiceHoursSerachYearText.setEditable(false);
+        mServiceHoursSerachYearText.setEnabled(false);
+        mServiceHoursSerachYearText.setBackground(MainUI.mTextColor);
+        
+        mDBNameLabelServiceHoursAwardName = new Label (composite,SWT.NONE);
+		mDBNameLabelServiceHoursAwardName.setText("姓名: ");
+		mSerivceHoursAwardNameText = new Text(composite,SWT.SINGLE | SWT.BORDER);
+		mSerivceHoursAwardNameText.setEditable(false);
+		mSerivceHoursAwardNameText.setEnabled(false);
+		mSerivceHoursAwardNameText.setBackground(MainUI.mTextColor);	 
+	}
+	
+	protected void createServiceHoursRegularSearchDetailTabFolder(Composite dialogshell) {
+		tabFolder = new TabFolder(dialogshell, SWT.NONE | SWT.BORDER);
+        GridData gridLayout = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gridLayout.heightHint = 250;
+	    gridLayout.widthHint = 350;
+		tabFolder.setLayoutData(gridLayout);
+		
+		mScrolledCompositeTotalHours = new ScrolledComposite (tabFolder,SWT.BORDER );
+		mScrolledCompositeTotalHours.setExpandHorizontal(true);
+	    mScrolledCompositeTotalHours.setExpandVertical(true);
+		itemTotalHours = new TabItem(tabFolder, SWT.NONE);  
+        itemTotalHours.setText("總時數排序");
+        itemTotalHours.setControl(mScrolledCompositeTotalHours);
+        
+		mTableTotalHours = new Table(mScrolledCompositeTotalHours,SWT.NONE);  
+        mTableTotalHours.setHeaderVisible(true);
+        mTableTotalHours.setLinesVisible(true);
+	    mScrolledCompositeTotalHours.setContent(mTableTotalHours);
+		mScrolledCompositeTotalHours.setExpandHorizontal(true);
+		mScrolledCompositeTotalHours.setExpandVertical(true);
+		mScrolledCompositeTotalHours.setAlwaysShowScrollBars(true);
+		mScrolledCompositeTotalHours.setMinSize(mTableTotalHours.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		
+		
+		mScrolledCompositeServiceHours = new ScrolledComposite (tabFolder,SWT.BORDER );
+	    mScrolledCompositeServiceHours.setExpandHorizontal(true);
+	    mScrolledCompositeServiceHours.setExpandVertical(true);
+		itemServiceHours = new TabItem(tabFolder, SWT.NONE);   
+		itemServiceHours.setText("服務時數排序");
+		itemServiceHours.setControl(mScrolledCompositeServiceHours);
+		mTableServiceHours = new Table(mScrolledCompositeServiceHours,SWT.NONE);  
+        mTableServiceHours.setHeaderVisible(true);
+        mTableServiceHours.setLinesVisible(true);
+        mScrolledCompositeServiceHours.setContent(mTableServiceHours);
+        mScrolledCompositeServiceHours.setExpandHorizontal(true);
+        mScrolledCompositeServiceHours.setExpandVertical(true);
+        mScrolledCompositeServiceHours.setAlwaysShowScrollBars(true);
+        mScrolledCompositeServiceHours.setMinSize(mTableServiceHours.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		
+		mScrolledCompositePersonalDetail = new ScrolledComposite (tabFolder,SWT.BORDER );
+        mScrolledCompositePersonalDetail.setExpandHorizontal(true);
+        mScrolledCompositePersonalDetail.setExpandVertical(true);
+		itemPersonalDetail = new TabItem(tabFolder, SWT.NONE);  
+		itemPersonalDetail.setText("個人活動明細");
+		itemPersonalDetail.setControl(mScrolledCompositePersonalDetail);
+		mTablePersonalDetail = new Table(mScrolledCompositePersonalDetail,SWT.NONE);  
+		mTablePersonalDetail.setHeaderVisible(true);
+		mTablePersonalDetail.setLinesVisible(true);
+        mScrolledCompositePersonalDetail.setContent(mTablePersonalDetail);
+        mScrolledCompositePersonalDetail.setExpandHorizontal(true);
+        mScrolledCompositePersonalDetail.setExpandVertical(true);
+        mScrolledCompositePersonalDetail.setAlwaysShowScrollBars(true);
+        mScrolledCompositePersonalDetail.setMinSize(mTablePersonalDetail.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		  
+        tabFolder.setSelection(0);
+        
+        tabFolder.addSelectionListener(new SelectionListener() {
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			 widgetSelected(e);	
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent arg0) {
+			// TODO Auto-generated method stub
+			}
+  	    });
+	}
+	
+	
+
 	
 }

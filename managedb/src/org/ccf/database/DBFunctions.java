@@ -15,6 +15,7 @@ public class DBFunctions {
 	 //  Database credentials
 	private static final String USER = "root";
 	private static final String PASS = "1234";
+	private static String tableNotExists;
 	   
 	//private String dropdbSQL = "DROP TABLE User";
 	private String insertdbSQL = "insert into activityInfo"
@@ -23,26 +24,60 @@ public class DBFunctions {
 	
 	private String selectSQL= "select * from activityInfo";
 	
+	
+	
+	public boolean createDatabase() {
+		String checkDBExistSQL = "CREATE DATABASE IF NOT EXISTS ccf";
+		//System.out.println("[DBFunction_createDatabase]:Check if database exist");
+	    boolean ret = false;
+		try {
+	    	  //STEP 1: Register JDBC driver
+	    	  Class.forName("org.gjt.mm.mysql.Driver");
+			 //STEP 2: Open a connection
+		      System.out.println("Connecting to database...");
+		      con = DriverManager.getConnection(DB_URL, USER, PASS);
+		      if(con.isClosed()) {
+		    	  System.out.println("Connect to database failed!!");
+		      	  ret = false ;
+		          return ret;
+		      }else{
+		     //STEP 3: Check if database exist, if not and create one directly.
+		      stat = con.createStatement(); 
+			  int row = stat.executeUpdate(checkDBExistSQL); 
+			  if(row > 0)
+				  ret = true;
+			  else
+				  ret = false;
+		      }
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			ret = false;
+			e.printStackTrace();
+			
+		}catch (Exception e) {
+			ret = false;
+			e.printStackTrace();
+		}finally {
+			close();
+			con = null;
+		}
+		return ret;
+	}
+	
 	public void createConnection(){
 		try {
 			//STEP 1: Register JDBC driver
-		      Class.forName("org.gjt.mm.mysql.Driver");
-
-		    //STEP 2: Open a connection
-		      System.out.println("Connecting to database...");
-		      con = DriverManager.getConnection(DB_URL, USER, PASS);
-
-		    //STEP 3: Check if database exist, if not and create one directly.
-		      checkIfDatabaseExist();
-		    
-		    //STEP 4: Connect
+			 Class.forName("org.gjt.mm.mysql.Driver");
+		    ///Since we have create DB, we just need to establish connection,
+		    //STEP 2: Connect
 		     /*get connection
 			  *localhost:server name
 			  *3306: port number
 			  *test: DB name
 			  **/
 		      con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ccf?useUnicode=true&characterEncoding=utf-8","root","1234");
-			//Register driver
+		      
+		      //Register driver
 			//Class.forName("org.gjt.mm.mysql.Driver"); 
 			//con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "1234");
 			//con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ccf?useUnicode=true&characterEncoding=Big5", 
@@ -54,45 +89,56 @@ public class DBFunctions {
 		}
 	}
 	
-	public void checkIfDatabaseExist() {
-		String checkDBExistSQL = "CREATE DATABASE IF NOT EXISTS ccf";
-		System.out.println("[DBFunction_checkIfDatabaseExist]:Check if database exist");
-		try{ 
-			if(con == null)
-			  createConnection();
-		      stat = con.createStatement(); 
-		      stat.executeUpdate(checkDBExistSQL); 
-		    }catch(SQLException e){ 
-		      System.out.println("checkIfDatabaseExist Exception:" + e.toString()); 
-		    }finally{ 
-		      close(); 
-		    } 
-		
+	public String getTableNotExists () {
+		return tableNotExists;
 	}
+	
+	public boolean checkDatabaseTable(){
+		String []tableName = {"activityInfo","activity","award","brochure","emergencycontact","mgroup","meeting", 
+							  "meetingtime","personalinfo","servicehours","takeleave", "teacherleader","training","serviceitemid"};
+		boolean ret = false;
+		
+		for (int i=0; i< tableName.length; i++){
+			ret = checkIfTableExist (tableName[i]);
+			if(ret == false)
+				return ret;
+		}
+		
+		return ret;
+	}
+	
 	public boolean checkIfTableExist(String tableName){
 		boolean exist = false;
 		
 		try{
 			if(con == null)
 				createConnection();
-	    	
+				
 			  pst = con.prepareStatement("show tables like ?");
 			  pst.setString(1,tableName);
 			  rs = pst.executeQuery();
 			
-			if (rs.getRow()>0){
-				//System.out.println("table exists");
+			  int rows;
+			  if (!rs.last()){
+				  System.out.println("[DBFunctions_checkIfTableExist] "+tableName+": No data.");
+				}
+				rows = rs.getRow();
+				//System.out.println("row:"+rows);
+				rs.beforeFirst();
+
+			if (rows>0){
+				//System.out.println(tableName+" exists");
 				exist = true;
 			}
 			else {
-				//System.out.println("table dosen't exist");
+				System.out.println(tableName+" dosen't exist");
+				tableNotExists = tableName;
 				exist = false;
+				return exist;
 			} 
 		}catch(SQLException e){ 
 		      System.out.println("checkIfTableExists Exception :" + e.toString()); 
-		    }finally{ 
-		      close(); 
-		    } 
+		    }
 		return exist;
 	}
 	
@@ -103,8 +149,7 @@ public class DBFunctions {
 		    	  createConnection();
 				
 			  stat = con.createStatement(); 
-		      stat.executeUpdate(createTableSQL); 
-			//  stat.executeUpdate(activityInfodb);
+		      stat.executeUpdate(createTableSQL);
 		    }catch(SQLException e){ 
 		      System.out.println("CreateDB Exception :" + e.toString()); 
 		    }finally{ 
@@ -201,7 +246,7 @@ public class DBFunctions {
 				createConnection();
 		      stat = con.createStatement(); 
 		      rs = stat.executeQuery(selectSQL); 
-		      System.out.println("ACTIVITY"); 
+		      //System.out.println("ACTIVITY"); 
 		      while(rs.next()) 
 		      { 
 		       // System.out.println(rs.getInt("id")+"\t\t"+ 
@@ -327,7 +372,11 @@ public class DBFunctions {
 				{ 
 					pst.close(); 
 					pst = null; 
-		      } 
+		        }
+			/*	if(con != null)
+				{
+					con.close();
+				}*/
 		    }catch(SQLException e){ 
 		      System.out.println("Close Exception :" + e.toString()); 
 		    } 

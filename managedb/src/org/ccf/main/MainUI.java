@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
 
+import org.ccf.database.DBFunctions;
 import org.ccf.database.PersonalInfoTable;
 import org.ccf.database.ServiceHoursTable;
 import org.eclipse.swt.SWT;
@@ -85,7 +86,7 @@ public class MainUI {
 	  public static Text text,topDBText,buttomDBText,topSearchFormText,topSearchGroupYearText,topSearchGroupExitText,topSearchNameText,topSearchYearText,topSearchMonthText;
 	  //Font
 	  public Font boldFont;
-	  public static Color mTextColor, mTextItemColorBlue;
+	  public static Color mTextColor, mTextItemColorBlue,mTextItemColorRed;
 	  //Button
 	  private Button queryByConditionButton,queryAllButton,deleteButton, addButton,importDBButton,exportDBButton;
 	  //Dialogs
@@ -100,13 +101,17 @@ public class MainUI {
 	  private  ExportActivityDialog mExportActivityDialog;
 	  private  ServiceHoursSearchDialog mServiceHoursSearchDialog;
 	  private  ExportServiceHoursDialog mExportServiceHoursDialog;
-	 
-
-	  
+	  private  MessageBox  mErrorFileDialog;
+	  private  String mErrorDBDialogMessage = "請關閉此應用程式,並確認資料庫是否正常連線";
+	 //private  String mErrorDBTableDialogMessage = "資料不存在!!請輸入所有資料庫資料後,重新開起此應用程式";
+	  private  String mErrorDBTableDialogMessage;
 	  //Image icons
 	  private Image importDBImg,exportDBImg,exitImg,queryAllImg,deleteImg,addImg,queryByConditionImg,contactInfoSearchImg,exportContactInfoImg,insuranceSearchImg,exportInsuranceImg,activityDataSearchImg,exportActivityDataImg,serviceHoursSearchImg,exportServiceHoursImg;
-	  private UiDbInterface mUiDbInterface = new UiDbInterface();  
-	 
+	  private UiDbInterface mUiDbInterface = new UiDbInterface();
+	  boolean isDatabaseReady;
+	  boolean isDatabaseTableReady;
+	  
+	  
 	/*  private static MouseAdapter mMouseAdapterListener = new MouseAdapter() {
 	      public void mouseDown(MouseEvent e) {
 	    	  final Text text = new Text(MainUI.cursor, SWT.NONE);
@@ -124,7 +129,10 @@ public class MainUI {
 	  public MainUI() {
 	    display = new Display();
 	    shell = new Shell(display);
-	  
+	    
+	    isDatabaseReady= mUiDbInterface.createDatabase();
+	    isDatabaseTableReady = mUiDbInterface.checkDatabaseTable();
+	   // isDatabaseTableReady = true;
 	    shell.setLocation(20,20);
 	    shell.setImage(ImageCache.getImage("selection_recycle_24.png"));
 	    shell.setText("展愛隊資料庫管理系統");
@@ -132,6 +140,7 @@ public class MainUI {
 	    
 		mTextColor = display.getSystemColor(SWT.COLOR_WHITE);
 		mTextItemColorBlue = display.getSystemColor(SWT.COLOR_BLUE);
+		mTextItemColorRed = display.getSystemColor(SWT.COLOR_RED);
   
 	   // text = new Text(shell, SWT.BORDER);
 	   // text.setBounds(840, 670, 250, 20);
@@ -168,8 +177,12 @@ public class MainUI {
 	    contactMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 	    contactMenuHeader.setText("通訊錄");
 	    contactMenu = new Menu(shell, SWT.DROP_DOWN);
+	    if(isDatabaseReady == false || isDatabaseTableReady == false)
+	    	contactMenuHeader.setEnabled(false);
+	    else
 	    contactMenuHeader.setMenu(contactMenu);
-	  
+	    
+	   
 	    contactInfoSearchImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/contact_search_icon_16x16.png"));
 	    contactInfoSearchItem = new MenuItem(contactMenu, SWT.PUSH);
 	    contactInfoSearchItem.setImage(contactInfoSearchImg);
@@ -188,7 +201,10 @@ public class MainUI {
 	    insuranceMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 	    insuranceMenuHeader.setText("保險");
 	    insuranceMenu = new Menu(shell, SWT.DROP_DOWN);
-	    insuranceMenuHeader.setMenu(insuranceMenu);
+	    if(isDatabaseReady == false || isDatabaseTableReady == false)
+	    	insuranceMenuHeader.setEnabled(false);
+	    else
+	    	insuranceMenuHeader.setMenu(insuranceMenu);
 	    
 	    insuranceSearchImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/insurance_icon_16x16.png"));
 	    insuranceSearchItem = new MenuItem(insuranceMenu, SWT.PUSH);
@@ -209,6 +225,9 @@ public class MainUI {
 	    activityMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 	    activityMenuHeader.setText("活動");
 	    activityMenu = new Menu(shell, SWT.DROP_DOWN);
+	    if(isDatabaseReady == false || isDatabaseTableReady == false)
+	    	activityMenuHeader.setEnabled(false);
+	    else
 	    activityMenuHeader.setMenu(activityMenu);
 	    
 	    activityDataSearchImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/activity_search_icon_16x16.png"));
@@ -229,6 +248,9 @@ public class MainUI {
 	    serviceHoursMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 	    serviceHoursMenuHeader.setText("服務時數 ");
 	    serviceHoursMenu = new Menu(shell, SWT.DROP_DOWN);
+	    if(isDatabaseReady == false || isDatabaseTableReady == false)
+	    	serviceHoursMenuHeader.setEnabled(false);
+	    else
 	    serviceHoursMenuHeader.setMenu(serviceHoursMenu);
 	    
 	   
@@ -246,7 +268,7 @@ public class MainUI {
 	    exportServiceHoursItem.addSelectionListener(new MenuItemListener());
 	    //歷史服務時數 settings --
 	    
-	    editMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+	 /*   editMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 	    editMenuHeader.setText("Edit");
 
 	    editMenu = new Menu(shell, SWT.DROP_DOWN);
@@ -257,7 +279,7 @@ public class MainUI {
 
 	   
 	    editCopyItem.addSelectionListener(new MenuItemListener());
-
+       */
 	  
         //Shell configuration
 	    shell.setMenuBar(menuBar);
@@ -275,6 +297,19 @@ public class MainUI {
 	  
 	  
 	    shell.open();
+	    if(isDatabaseReady == false){
+	    	mErrorFileDialog = new MessageBox (shell , SWT.ICON_ERROR);
+          	mErrorFileDialog.setText("失敗");
+          	mErrorFileDialog.setMessage(mErrorDBDialogMessage);
+          	mErrorFileDialog.open();
+	    }
+	    if(isDatabaseTableReady == false) {
+	    	mErrorFileDialog = new MessageBox (shell , SWT.ICON_ERROR);
+          	mErrorFileDialog.setText("失敗");
+          	mErrorDBTableDialogMessage = mUiDbInterface.getTableNotExists()+" 資料表不存在於資料庫中!!\n"+"請輸入所有資料庫資料後,重新開起此應用程式";
+          	mErrorFileDialog.setMessage(mErrorDBTableDialogMessage);
+          	mErrorFileDialog.open();
+	    }
 	  while (!shell.isDisposed()) {
 	      if (!display.readAndDispatch())
 	        display.sleep();
@@ -591,12 +626,15 @@ public class MainUI {
 		    deleteImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/delete_icon_32x32.png"));
 		    deleteButton.setImage(deleteImg);
 		    deleteButton.setText("資料庫資料刪除");
-		    
+		    if(isDatabaseReady == false || isDatabaseTableReady == false)
+		    	deleteButton.setEnabled(false);
 		    
 		    addButton = new Button(composite, SWT.PUSH);
 	        addImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/add_icon_32x32.png"));
 		    addButton.setText("資料庫資料新增");
 		    addButton.setImage(addImg);
+		    if(isDatabaseReady == false || isDatabaseTableReady == false)
+		    	addButton.setEnabled(false);
 		    
 		    importDBButton = new Button(composite, SWT.PUSH);
 		    importDBImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/import_icon_32x32.png"));
@@ -607,7 +645,8 @@ public class MainUI {
 	        exportDBImg = new Image(display,MainUI.class.getClassLoader().getResourceAsStream("img/export_icon_32x32.png"));
 	        exportDBButton.setText("資料庫資料輸出");
 	        exportDBButton.setImage(exportDBImg);
-		    
+	        if(isDatabaseReady == false || isDatabaseTableReady == false)
+	        	exportDBButton.setEnabled(false);
 		    //Listener
 		    Listener listener = new Listener() {
 				@Override

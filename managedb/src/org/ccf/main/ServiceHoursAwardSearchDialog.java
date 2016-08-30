@@ -3,16 +3,20 @@ package org.ccf.main;
 import java.sql.SQLException;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
-public class ServiceHoursRegularSearchDialog extends DialogCombo{
-	private static String title = "服務時數統計資料查詢";
-	private static String iconpath = "img/service_hours_regular_icon_32x32.png";
+
+public class ServiceHoursAwardSearchDialog extends DialogCombo {
+	private static String title = "歷年服務時數與獲獎統計資料查詢";
+	private static String iconpath = "img/service_hours_award_icon_32x32.png";
 	private UiDbInterface mUiDbInterface = new UiDbInterface();
     private static Display mDisplay;
 	private Listener mListener = new Listener() {
@@ -23,18 +27,12 @@ public class ServiceHoursRegularSearchDialog extends DialogCombo{
 				mDialog.close();
 			} //Cancel
 			else if(event.widget == mOkButton) {
-				/*try {
-					mUiDbInterface.getServiceHoursRegularData();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
 				try {	
-	     				MainUI.resetAllTexts();
-						MainUI.setSearchFormText("服務時數統計資料");
+						MainUI.resetAllTexts();
+						MainUI.setSearchFormText("歷年服務時數與獲獎統計資料");
 						MainUI.setSearchGroupYearText(mDBListComboYear.getText());
 						MainUI.setSearchYearText(mDBListComboServiceHoursYear.getText());
-					 	MainUI.setAllDataToTable1(mUiDbInterface.getServiceHoursRegularHeader(),mUiDbInterface.getServiceHoursRegularData(mDBListComboYear.getText(),mDBListComboServiceHoursYear.getText()),true,1);
+						MainUI.setAllDataToTable1(mUiDbInterface.getServiceHoursAwardHeader(),mUiDbInterface.getServiceHoursAwardData(mDBListComboYear.getText(),mDBListComboServiceHoursYear.getText()),true,1);
 
 						MainUI.topTable.addListener(SWT.MouseDoubleClick, new Listener(){
 				         public void handleEvent(Event event){
@@ -47,41 +45,39 @@ public class ServiceHoursRegularSearchDialog extends DialogCombo{
 				                     if (rect.contains(pt)) {
 				                         if(!item.getText(1).equals("")){
 				                    	 try {
-				                    		 ServiceHoursRegularSearchDetailDiaog mServiceHoursRegularSearchDetailDiaog = new ServiceHoursRegularSearchDetailDiaog(mDisplay,MainUI.getSearchGroupYearText(),MainUI.getSearchYearText(),item.getText(1));
-											 } catch (SQLException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-											}
+											ServiceHoursAwardDetailDialog mServiceHoursAwardDetailDialog = new ServiceHoursAwardDetailDialog(mDisplay,item.getText(1),MainUI.getSearchYearText());
+										} catch (SQLException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
 				                         }
-				                        
 				                     }
 				                 }
 				             }
 				         }
 				     }); 
-			} catch (SQLException e) {
+				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				mDialog.close();
-			}//OK
+			} //OK
 		 }
       }; //listener 
-    
-    private String[] getGroupYear() throws SQLException{
+      
+	private String[] getGroupYear() throws SQLException{
 		return mUiDbInterface.getGroupYears();
 	}
 	private String[] getActivityYear() throws SQLException{
 		return mUiDbInterface.getActivityYears();
 	}
 	
-	public ServiceHoursRegularSearchDialog(Display display) throws SQLException{
+	public ServiceHoursAwardSearchDialog(Display display) throws SQLException{
 	super (display,title,iconpath);	
 	  mDisplay = display;
 	  DialogCombo();
 	  mLabelTextYear = "選擇組別年度: ";
 	  mComboYearList = getGroupYear();
-	  mLabelTextServiceHoursYear = "選擇服務時數統計年度: ";
 	  mComboServiceHoursYearList = getActivityYear();
 	  createDialogYearDropList(mDialog);
 	  createDialogServiceHoursAwardYearDropList(mDialog);
@@ -92,5 +88,4 @@ public class ServiceHoursRegularSearchDialog extends DialogCombo{
       mDialog.open();
 	
 	}
-
 }

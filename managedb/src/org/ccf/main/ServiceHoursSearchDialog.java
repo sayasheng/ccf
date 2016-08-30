@@ -18,7 +18,7 @@ public class ServiceHoursSearchDialog extends DialogCombo{
 		
 			if(event.widget == mServiceHoursAwardButton){
 				try {
-					ServuceHoursAwardSearchDialog mServuceHoursAwardSearchDialog = new ServuceHoursAwardSearchDialog(mDisplay);
+					ServiceHoursAwardSearchDialog mServuceHoursAwardSearchDialog = new ServiceHoursAwardSearchDialog(mDisplay);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
