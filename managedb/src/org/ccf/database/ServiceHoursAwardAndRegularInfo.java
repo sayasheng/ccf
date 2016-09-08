@@ -221,11 +221,11 @@ public class ServiceHoursAwardAndRegularInfo {
 				mySingleData = getServiceHoursAwardPersonalDetail(myData[i][1],searchyear);	
 				//2.Start the sheet number from 1 to build the sheet for single data.
 			    //Assign hyperlink_colume to (0) because we don't need to any hyper link in each single data sheet
-				servicehoursawardandregularinfo_xsl.exportToExcelWithHyperlink(mySingleData,getServiceHoursAwardPersonalDetailHeader(),myData[i][1],i+1,0);
+				servicehoursawardandregularinfo_xsl.exportToExcelWithHyperlink(mySingleData,getServiceHoursAwardPersonalDetailHeader(),myData[i][1],i+1,0,0);
 			}
 			 //3.Give the sheet number (0) to build the main sheet.
 			 //Assign hyperlink_colume to (1) to build the hyperlink for each column 1
-			servicehoursawardandregularinfo_xsl.exportToExcelWithHyperlink(myData,getServiceHoursAwardHeader(),"總計",0,1);
+			servicehoursawardandregularinfo_xsl.exportToExcelWithHyperlink(myData,getServiceHoursAwardHeader(),"總計",0,1,1);
 			/*
 			for (int i = 0 ; i<mySignleData.length ; i++ ){
 				for (int j=0; j<serviceHoursAwardPersonalDetailHeader.length; j++ ) {
@@ -562,5 +562,53 @@ public class ServiceHoursAwardAndRegularInfo {
 		return null;
 	 }
 
-	
+	public boolean exportServiceHoursRegularData(String directory,String groupyear, int searchyear) {
+		boolean result = false ;
+		String [][] myData =null;
+		String [][] myServiceHoursRegularAllHoursSortData = null;
+		String [][] myServiceHoursRegularSortData = null;
+		String [][] myServiceHoursRegularPersonalDetailData = null;
+		
+		servicehoursawardandregularinfo_xsl.createWorkbook(directory, "服務時數統計_"+searchyear);
+		
+		try {
+			//Get all service hours data
+			myData = getServiceHoursRegularData (groupyear, searchyear);
+			myServiceHoursRegularAllHoursSortData = getServiceHoursRegularAllHoursSortData(groupyear, searchyear);
+			myServiceHoursRegularSortData = getServiceHoursRegularServiceHoursSortData(groupyear, searchyear);
+			
+			 //1.Set sheet for 總時數排序
+			  servicehoursawardandregularinfo_xsl.exportToExcelForServiceHoursSortFormat(myServiceHoursRegularAllHoursSortData,getServiceHoursRegularAllHoursSortHeader() , "總時數排序", 1, 27);
+			  //2.Set sheet for 服務時數排序
+			  servicehoursawardandregularinfo_xsl.exportToExcelForServiceHoursSortFormat(myServiceHoursRegularSortData, getServiceHoursRegularServiceHoursSortHeader(), "服務時數排序", 2, 27);
+			  
+			for (int i =0 ; i < myData.length ;i++){
+				//System.out.println(myData[i][1]);
+				//3. Get 姓名 (column 1) from all data and query database then write to a excel file
+				myServiceHoursRegularPersonalDetailData = getServiceHoursRegularPersonalDetailData(searchyear,myData[i][1]);	
+				//4.Start the sheet number from 1 to build the sheet for single data.
+			    //Assign hyperlink_colume to (0) because we don't need to any hyper link in each single data sheet
+				servicehoursawardandregularinfo_xsl.exportToExcelWithHyperlink(myServiceHoursRegularPersonalDetailData,getServiceHoursRegularPersonalDetailHeader(),myData[i][1],i+3,0,0);
+			} 
+			 
+			   //5.Set sheet for name_link and give the sheet number (0) to build the main sheet.
+			   //Assign hyperlink_colume to (3) to build the hyperlink for each column 1
+			   servicehoursawardandregularinfo_xsl.exportToExcelWithHyperlink(myData,getServiceHoursRegularHeader(),"name_link",0,1,3);
+			/*
+			for (int i = 0 ; i<mySignleData.length ; i++ ){
+				for (int j=0; j<serviceHoursAwardPersonalDetailHeader.length; j++ ) {
+					System.out.println(mySignleData[i][j]);
+				}
+			}*/
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		result = servicehoursawardandregularinfo_xsl.writeWorkbook();
+		if(result == false) 
+			return result;
+		result = servicehoursawardandregularinfo_xsl.closeWorkbook();
+	  return result;
+	}
 }

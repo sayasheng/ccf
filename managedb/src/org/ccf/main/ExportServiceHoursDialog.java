@@ -26,12 +26,12 @@ public class ExportServiceHoursDialog extends DialogCombo{
 				mDialog.close();
 			}
 			else if(event.widget == mServiceHoursRegularButton) {
-			/*	try {
-					ExportActivityRegisterDialog mActivityRegisterSearchDialog = new ExportActivityRegisterDialog(mDisplay);
+				try {
+					ExportServiceHoursRegularDialog mExportServiceHoursRegularDialog = new ExportServiceHoursRegularDialog(mDisplay);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}*/
+				}
 				mDialog.close();
 			}
 		}
